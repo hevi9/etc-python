@@ -9,7 +9,7 @@ window.connect("destroy", lambda q: Gtk.main_quit())
 notebook = Gtk.Notebook()
 window.add(notebook)
 
-for page in range(1, 100):
+for page in range(1, 4):
     label = Gtk.Label(label="Page %s" % page)
     vbox = Gtk.VBox()
     notebook.append_page(vbox, label)
