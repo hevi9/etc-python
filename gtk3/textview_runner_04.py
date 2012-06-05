@@ -95,7 +95,7 @@ class Runner(Gtk.Window):
     self.run_process(runtext)
 
   def on_idle(self):
-    #log.debug("on_idle")
+    log.debug("on_idle")
     text = self.process_cur.stdout.readline()
     if len(text) == 0:
       return False
