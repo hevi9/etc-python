@@ -1,3 +1,3 @@
-from jinja import from_string
-print from_string('Hello {{ data }}!').render(data='World')
+from jinja2 import Template
+print(Template('Hello {{ data }}!').render(data='World'))
 
