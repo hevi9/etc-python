@@ -55,7 +55,7 @@ class ClipboardApp:
         entry = Gtk.Entry()
         hbox.pack_start(entry, True, True, 0)
 
-        #FIXME: have the button constuctor take a stock_id
+        #F-IXME: have the button constuctor take a stock_id
         # create button
         button = Gtk.Button.new_from_stock(Gtk.STOCK_COPY)
         hbox.pack_start(button, False, False, 0)
@@ -71,7 +71,7 @@ class ClipboardApp:
         # create secondary entry
         entry = Gtk.Entry()
         hbox.pack_start(entry, True, True, 0)
-        #FIXME: have the button constuctor take a stock_id
+        #F-IXME: have the button constuctor take a stock_id
         # create button
         button = Gtk.Button.new_from_stock(Gtk.STOCK_PASTE)
         hbox.pack_start(button, False, False, 0)
@@ -133,7 +133,7 @@ class ClipboardApp:
         ebox.connect('button-press-event', self.button_press, image)
 
         # tell the clipboard manager to make data persistent
-        #FIXME: Allow sending strings a Atoms and convert in PyGI
+        #F-IXME: Allow sending strings a Atoms and convert in PyGI
         atom = Gdk.atom_intern('CLIPBOARD', True)
         clipboard = Gtk.Clipboard.get(atom)
         clipboard.set_can_store(None)
@@ -146,7 +146,7 @@ class ClipboardApp:
         clipboard = entry.get_clipboard(atom)
 
         # set the clipboard's text
-        # FIXME: don't require passing length argument
+        # F-IXME: don't require passing length argument
         clipboard.set_text(entry.get_text(), -1)
 
     def paste_received(self, clipboard, text, entry):
@@ -162,7 +162,7 @@ class ClipboardApp:
         clipboard.request_text(self.paste_received, entry)
 
     def get_image_pixbuf(self, image):
-        # FIXME: We should hide storage types in an override
+        # F-IXME: We should hide storage types in an override
         storage_type = image.get_storage_type()
         if storage_type == Gtk.ImageType.PIXBUF:
             return image.get_pixbuf()
@@ -208,13 +208,13 @@ class ClipboardApp:
 
         self.menu = Gtk.Menu()
 
-        #FIXME: default constructor should take a stock property
+        #F-IXME: default constructor should take a stock property
         item = Gtk.ImageMenuItem.new_from_stock(Gtk.STOCK_COPY, None)
         item.connect('activate', self.copy_image, data)
         item.show()
         self.menu.append(item)
 
-        #FIXME: default constructor should take a stock property
+        #F-IXME: default constructor should take a stock property
         item = Gtk.ImageMenuItem.new_from_stock(Gtk.STOCK_PASTE, None)
         item.connect('activate', self.paste_image, data)
         item.show()

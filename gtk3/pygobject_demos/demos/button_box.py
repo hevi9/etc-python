@@ -100,7 +100,7 @@ class ButtonBoxApp:
         bbox.set_layout(layout)
         bbox.set_spacing(spacing)
 
-        # FIXME: GtkButton consturctor should take a stock_id
+        # F-IXME: GtkButton consturctor should take a stock_id
         button = Gtk.Button.new_from_stock(Gtk.STOCK_OK)
         bbox.add(button)
 

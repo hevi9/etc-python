@@ -121,7 +121,7 @@ class RotatedTextApp:
         # Set fancy shape attributes for all hearts
         attrs = Pango.AttrList()
 
-        # FIXME: attr_shape_new_with_data isn't introspectable
+        # F-IXME: attr_shape_new_with_data isn't introspectable
         '''
         ink_rect = logical_rect
         p = BYTES_TEXT.find(BYTES_HEART)

@@ -91,7 +91,7 @@ class SearchboxApp:
         menu = self.create_search_menu(entry)
         entry.connect('icon-press', self.icon_press_cb, menu)
 
-        # FIXME: this should take None for the detach callback
+        # F-IXME: this should take None for the detach callback
         #        but our callback implementation does not allow
         #        it yet, so we pass in a noop callback
         menu.attach_to_widget(entry, self.detach)

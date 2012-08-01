@@ -94,7 +94,7 @@ class ComboboxApp:
         renderer = Gtk.CellRendererPixbuf()
         combo.pack_start(renderer, False)
 
-        # FIXME: override set_attributes
+        # F-IXME: override set_attributes
         combo.add_attribute(renderer, 'pixbuf', PIXBUF_COL)
         combo.set_cell_data_func(renderer, self.set_sensitive, None)
 
@@ -123,7 +123,7 @@ class ComboboxApp:
         combo.add_attribute(renderer, 'text', 0)
         combo.set_cell_data_func(renderer, self.is_capital_sensistive, None)
 
-        # FIXME: make new_from_indices work
+        # F-IXME: make new_from_indices work
         #        make constructor take list or string of indices
         path = Gtk.TreePath.new_from_string('0:8')
         treeiter = model.get_iter(path)
@@ -156,7 +156,7 @@ class ComboboxApp:
         box.set_border_width(5)
         frame.add(box)
 
-        # FIXME: model is not setup when constructing Gtk.ComboBoxText()
+        # F-IXME: model is not setup when constructing Gtk.ComboBoxText()
         #        so we call new() - Gtk should fix this to setup the model
         #        in __init__, not in the constructor
         combo = Gtk.ComboBoxText.new()
@@ -167,7 +167,7 @@ class ComboboxApp:
 
         entry = Gtk.Entry()
 
-        # FIXME: a bug in PyGObject does not allow us to access dynamic
+        # F-IXME: a bug in PyGObject does not allow us to access dynamic
         #        methods on GObject.Object, so bind properties the hard way
         # GObject.Object.bind_property(combo, 'active-id',
         #                             entry, 'text',

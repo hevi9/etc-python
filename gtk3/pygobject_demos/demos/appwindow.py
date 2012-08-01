@@ -54,7 +54,7 @@ def activate_action(action, user_data=None):
                                buttons=Gtk.ButtonsType.CLOSE,
                                text='You activated action: "%s" of type %s' % (name, _type))
 
-    # FIXME: this should be done in the constructor
+    # F-IXME: this should be done in the constructor
     dialog.set_transient_for(window)
     dialog.connect('response', widget_destroy)
     dialog.show()

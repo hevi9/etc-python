@@ -31,7 +31,7 @@ from gi.repository import Gtk, Gdk
 
 class ColorSelectorApp:
     def __init__(self):
-        # FIXME: we should allow Gdk.Color to be allocated without parameters
+        # F-IXME: we should allow Gdk.Color to be allocated without parameters
         #        Also color doesn't seem to work
         self.color = Gdk.RGBA()
         self.color.red = 0
