@@ -1,5 +1,5 @@
-hevi_web
-********
+learning_python3 sphinx
+***********************
 
 .. toctree::
    :glob:
@@ -9,14 +9,26 @@ hevi_web
 
 This is written as Sphinx [Sph]_.
 
-hevi_web.web
+Auto
+====
+
+  .. automodule:: web
+     :members:
+     :undoc-members:
+
+Code include
 ============
 
-.. automodule:: web
-   :members:
-   :undoc-members:
+  .. literalinclude:: web.py
 
-.. literalinclude:: web.py
+File Download
+=============
+
+:download:`sphinx.zip <sphinx.zip>` -- works
+
+:download:`sphinx.zip` -- works
+
+:download:`<sphinx.zip>` -- don't work
 
 References
 ==========
