@@ -36,7 +36,6 @@ TODO's
 http://sphinx.pocoo.org/ext/todo.html
 
 .. todo:: a task
-
 .. todo:: add this to eclipse
 
 List
