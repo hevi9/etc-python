@@ -19,7 +19,7 @@ Auto
 Code include
 ============
 
-  .. literalinclude:: web.py
+|  .. literalinclude:: web.py
 
 File Download
 =============
@@ -28,7 +28,31 @@ File Download
 
 :download:`sphinx.zip` -- works
 
-:download:`<sphinx.zip>` -- don't work
+| :download:`<sphinx.zip>` -- don't work
+
+TODO's
+======
+
+http://sphinx.pocoo.org/ext/todo.html
+
+.. todo:: a task
+
+.. todo:: add this to eclipse
+
+List
+
+.. todolist::
+
+Note
+====
+
+.. note::
+
+   This function is not suitable for sending spam e-mails.
+
+
+Sphinx paper creation
+=====================
 
 References
 ==========

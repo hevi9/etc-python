@@ -15,6 +15,8 @@ master_doc = "index"
 templates_path = ['doc']
 sys.path.append(".")
 
+todo_include_todos = True
+
 ## autodoc
 autodoc_default_flags = [
   'members', 
