@@ -1,0 +1,24 @@
+hevi_web
+********
+
+.. toctree::
+   :glob:
+   
+   doc/*
+
+
+This is written as Sphinx [Sph]_.
+
+hevi_web.web
+============
+
+.. automodule:: web
+   :members:
+   :undoc-members:
+
+.. literalinclude:: web.py
+
+References
+==========
+
+.. [Sph] http://sphinx.pocoo.org/rest.html
