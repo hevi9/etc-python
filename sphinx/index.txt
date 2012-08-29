@@ -6,6 +6,7 @@ learning_python3 sphinx
    
    doc/*
 
+http://sphinx.pocoo.org/rest.html
 
 This is written as Sphinx [Sph]_.
 
@@ -15,6 +16,17 @@ Auto
   .. automodule:: web
      :members:
      :undoc-members:
+
+Image & Figure
+==============
+
+http://sphinx.pocoo.org/rest.html#images
+
+.. image:: com_def_01.png
+
+.. figure:: com_def_01.png
+
+   Caption text
 
 Code include
 ============
