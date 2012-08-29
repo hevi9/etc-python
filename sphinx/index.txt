@@ -4,11 +4,25 @@ learning_python3 sphinx
 .. toctree::
    :glob:
    
+   subdocument
    doc/*
 
 http://sphinx.pocoo.org/rest.html
 
 This is written as Sphinx [Sph]_.
+
+Links
+=====
+
+`Link text <http://example.com/>`_ 
+
+This is a paragraph that contains `a link`_.
+
+.. _a link: http://example.com/
+
+:doc:`subdocument`
+
+:doc:`A Subdocument <subdocument>`
 
 Auto
 ====
