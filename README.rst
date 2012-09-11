@@ -1,8 +1,6 @@
 Python idea prototypes
 **********************
+(and learning git & github along the way)
 
-master branch
-
-more
 
 
