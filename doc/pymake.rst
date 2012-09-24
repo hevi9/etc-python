@@ -21,7 +21,7 @@ sample::
   def dummy1(ctx):
     sh.cat(ctx.srcs,ctx.trgs[0])
 
-make comparison:
+make comparison::
   
   target.txt: source1.txt source2.txt
     cat $@ > $$
