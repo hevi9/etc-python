@@ -6,6 +6,10 @@ Motivation
 
 Why use other tool than (gnu)make or cook ?
 
+  * being able to to have programming capability as much needed in rules
+    execution
+  * total control: tracking every phase
+
 Operation
 =========
 
