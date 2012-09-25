@@ -14,11 +14,44 @@ import argparse # http://docs.python.org/py3k/library/argparse.html
 import logging # http://docs.python.org/py3k/library/logging.html
 import webbrowser # http://docs.python.org/py3k/library/webbrowser.html
 import inspect
+import jinja2
 from bottle import route, run, jinja2_template
 log = logging.getLogger(__name__)
 
 ##############################################################################
 ## Code
+
+pages = dict()
+
+pages["base.html"] = """
+<html>
+<head>
+  <title>{{ page_title }}</title>
+</head>
+<body>
+
+<table width="99%" border="0">
+<tr>
+  <td><p>{{ page_title }}</p></td>
+  <td align="right">{{ page_gen }}</td>
+</tr>
+<tr>
+<td><a href="file:///home/hevi/public_html/index.html">Index</a>
+</td>
+<td></td>
+</tr>
+</table>
+
+{% block content %}
+<p>NO CONTENT</p>
+{% endblock %}
+
+</body>
+</html>
+"""
+
+
+jenv = jinja2.Environment(loader=jinja2.DictLoader(pages))
 
 def f(s):
   caller = inspect.currentframe().f_back
