@@ -75,8 +75,10 @@ class Base:
     self.ctx = dict() # ???
     self.ctx["page"] = self
     self.title = f("Base {rp}")
+    self.rp = rp
     self.gen = datetime.datetime.now().isoformat(" ")
     self.ctx["model"] = self.model = Model()
+    self.model.path = os.path.normpath(rp) 
 
   def render(self):
     return Base.tmpl.render(self.ctx)
@@ -107,15 +109,39 @@ class File(Base):
 pages["dir.html"] = """
 {% extends "base.html" %}
 {% block content %}
-DIR
+<table>
+{% for file in model.files %}
+<tr>
+ <td><a href="{{file.path}}">{{file.name}}</a></td>
+</tr>
+{% endfor %}
+</table>
 {% endblock %}
 """
+
+class AFile: pass
 
 class Dir(Base):
   tmpl = jenv.get_template("dir.html")
 
-  def __init__(self,rp):
+  def __init__(self,rp,st):
     super().__init__(rp)
+    self.st = st
+    self.title = f("Dir {rp}")
+    ##
+    self.model.file_dirs = list()
+    self.model.file_dirs = list()
+    for name in os.listdir(rp):
+      file = AFile()
+      file.name = name
+      if rp == "/":
+        file.path = "/" + name
+      else:
+        file.path = rp + "/" + name
+      ##
+      
+      self.model.files.append(file)
+    log.debug(self.model.files) 
 
   def render(self):
     return Dir.tmpl.render(self.ctx)
@@ -192,7 +218,7 @@ def make_entry(rp):
     return Error(rp,ex)
   mode = st.st_mode
   if S_ISDIR(mode):
-    return Dir(rp)
+    return Dir(rp,st)
   elif S_ISCHR(mode):
     return Base(rp) # XXC Char
   elif S_ISBLK(mode):
