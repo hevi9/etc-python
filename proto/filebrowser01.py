@@ -18,7 +18,7 @@ import jinja2
 import datetime
 import time
 import re
-from stat import * # http://docs.python.org/py3k/library/stat.html
+import stat # http://docs.python.org/py3k/library/stat.html
 from threading import Timer 
 from bottle import route, run, jinja2_template
 log = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ def f(s):
   combi = dict(caller.f_globals)
   combi.update(caller.f_locals)
   return s.format(**combi)
+
 
 ##############################################################################
 ## Base
@@ -119,8 +120,6 @@ pages["dir.html"] = """
 {% endblock %}
 """
 
-class AFile: pass
-
 class Dir(Base):
   tmpl = jenv.get_template("dir.html")
 
@@ -130,16 +129,10 @@ class Dir(Base):
     self.title = f("Dir {rp}")
     ##
     self.model.file_dirs = list()
-    self.model.file_dirs = list()
+    self.model.file_files = list()
     for name in os.listdir(rp):
-      file = AFile()
-      file.name = name
-      if rp == "/":
-        file.path = "/" + name
-      else:
-        file.path = rp + "/" + name
-      ##
-      
+      abspath = os.path.join(rp,name)
+      file = AFile(abspath, os.lstat(abspath))
       self.model.files.append(file)
     log.debug(self.model.files) 
 
