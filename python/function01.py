@@ -9,7 +9,7 @@ def top():
     print("sub1()")
   def sub2():
     a = "sub2"
-    print("sub1()")    
+    print("sub2()")    
   call(sub1)
   print(a)
   
@@ -23,7 +23,7 @@ class Klass:
       print("sub1()")
     def sub2():
       self.a = "ksub2"
-      print("sub1()")    
+      print("sub2()")    
     call(sub2)
     print(self.a)
 
