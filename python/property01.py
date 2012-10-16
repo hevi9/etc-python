@@ -3,6 +3,9 @@ Properties usage
 
 http://stackoverflow.com/questions/2390827/how-to-properly-subclass-dict-and-override-get-set
 
+
+http://code.activestate.com/recipes/473784-how-to-use-custom-dictionaries-to-modify-attribute/
+
 """
 
 class propdict(dict):
@@ -37,7 +40,12 @@ print("a.prop = {0}".format(a.prop))
 print("A.prop = {0}".format(A.prop))
 print("A.prop.__get__(a) = {0}".format(A.prop.__get__(a)))
 
+
 print("a.props['prop'] = {0} ".format(a.props2["prop"]))
 
+print(".props2 iteration: ")
 for key in a.props2:
   print(a.props[key])
+  
+print(vars(a))  
+  
