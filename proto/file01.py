@@ -12,11 +12,14 @@ log = logging.getLogger(__name__)
 import stat # http://docs.python.org/py3k/library/stat.html
 import inspect # http://docs.python.org/py3k/library/inspect.html
 import mimetypes # http://docs.python.org/py3k/library/mimetypes.html
-import magic # https://github.com/ahupp/python-magic
+from util import PropsDict
+## python-magic don't work
+#import magic # https://github.com/ahupp/python-magic
+
 __all__ = list()
 
 ##############################################################################
-## 
+## File
 
 class File:
   
@@ -24,11 +27,8 @@ class File:
     assert os.path.isabs(path)
     self._path = path # absolute path
     self._st = os.lstat(path)
-    ## put properties to iterable dictionary from File.info 
-    ## XXX this should done someway better, duplicate info now
-    self.info = dict()
-    for name in File.info:
-      self.info[name] = getattr(self,name)
+    ##
+    self.props = PropsDict(self)
     
   ## file information by property
 
@@ -99,22 +99,23 @@ class File:
   def rdev(self): return self._st.st_rdev 
 
   @property #23
-  def mimetype(self): return magic.from_file(self._path) # XXX wrong type ex
+  def name(self): return os.path.basename(self._path)
 
 
-## get file info properties
-File.info = dict()
-for name,prop in inspect.getmembers(
-  File, lambda o: isinstance(o,property)):
-  File.info[name] = prop
+  ## don't work
+  #@property #23
+  #def mimetype(self): return magic.from_file(self._path) # XXX wrong type ex
 
 __all__.append("File")
 
-## test
+##############################################################################
+## Dev Test
+
 if __name__ == "__main__":
   a = File("/")
-  for i in a.info.values():
-    print(i)
+  print("File {0}".format(a.path))
+  for key in sorted(a.props):
+    print("  {0} = {1} as {2}".format(key,a.props[key],type(a.props[key])))
 
 
 

@@ -22,6 +22,20 @@ Usage::
   obj = MyData(
   for key in obj:
     print("{0} = {1}".format(key,obj.props[key])
+    
+f is for a format
+=================
+
+Convience format function that takes format keys directly
+from locals and globals.
+
+Usage::
+  from util import f
+  ..
+  b = 100
+  def func():
+    a = "value"
+    log.debug(f"{a} and {b}")
 """
 
 ##############################################################################
@@ -56,3 +70,15 @@ class PropsDict(collections.Mapping):
     return len(self._keys)
 
 __all__.append("PropsDict")
+
+
+##############################################################################
+## f is for format
+
+def f(s):
+  """ Format text from locals and globals names. """
+  caller = inspect.currentframe().f_back
+  combi = dict(caller.f_globals)
+  combi.update(caller.f_locals)
+  return s.format(**combi)
+__all__.append("f")

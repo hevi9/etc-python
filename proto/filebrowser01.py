@@ -22,22 +22,11 @@ import stat # http://docs.python.org/py3k/library/stat.html
 from threading import Timer 
 from bottle import route, run, jinja2_template
 log = logging.getLogger(__name__)
-
-pages = dict()
+from .util import f
 
 # works ? loads a page on demand ?
+pages = dict()
 jenv = jinja2.Environment(loader=jinja2.DictLoader(pages))
-
-##############################################################################
-## Utils
-
-def f(s):
-  """ Format text from locals and globals names. """
-  caller = inspect.currentframe().f_back
-  combi = dict(caller.f_globals)
-  combi.update(caller.f_locals)
-  return s.format(**combi)
-
 
 ##############################################################################
 ## Base
