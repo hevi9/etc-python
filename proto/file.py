@@ -30,6 +30,14 @@ class File:
     ##
     self.props = PropsDict(self)
     
+  ## file operations
+  
+  def subfile(self,name:str):
+    return File(os.path.join(self.path,name))
+
+  def listdir(self):
+    return os.listdir(self.path)
+    
   ## file information by property
 
   @property #1
