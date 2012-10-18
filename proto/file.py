@@ -109,7 +109,26 @@ class File:
   @property #23
   def name(self): return os.path.basename(self._path)
 
-
+  @property #24
+  def chtype(self):
+    """System file type as character. """ 
+    if self.isdir:
+      return "D"
+    elif self.ischr:
+      return "c"
+    elif self.isblk:
+      return "b"
+    elif self.isfifo:
+      return "f"
+    elif self.isreg:
+      return "F"
+    elif self.islnk:
+      return "L"
+    elif self.issock:
+      return "S"
+    else:
+      return "E"
+  
   ## don't work
   #@property #23
   #def mimetype(self): return magic.from_file(self._path) # XXX wrong type ex

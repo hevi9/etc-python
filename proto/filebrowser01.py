@@ -15,8 +15,8 @@ import logging # http://docs.python.org/py3k/library/logging.html
 import webbrowser # http://docs.python.org/py3k/library/webbrowser.html
 import inspect
 import jinja2
-import datetime
-import time
+import datetime # http://docs.python.org/py3k/library/datetime.html
+import time # http://docs.python.org/py3k/library/time.html
 import re
 import stat # http://docs.python.org/py3k/library/stat.html
 from threading import Timer 
@@ -25,10 +25,51 @@ log = logging.getLogger(__name__)
 from util import f
 from file import File
 
-# works ? loads a page on demand ?
+##############################################################################
+## Templating
+
+## incode template pages
 pages = dict()
+
+## jinja2 environment
 jenv = jinja2.Environment(loader=jinja2.DictLoader(pages))
 
+## date presentation filter
+def date(value:float):
+  return datetime.datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M")
+jenv.filters["date"] = date
+
+## short date presentation filter
+def sdate(value:float):
+  return datetime.datetime.fromtimestamp(value).strftime("%y%m")
+jenv.filters["sdate"] = sdate
+
+def noct(value:int):
+  return "{0:o}".format(value)
+jenv.filters["noct"] = noct
+
+  
+## file size presentation
+def fsize(value:int):
+  if value < 1000:
+    return str(value) + "B"
+  elif value < 1000000:
+    sv = str(int(value / 1024))
+    if len(sv) == 1:
+      sv = "{0:.1f}".format(value / 1024.)
+    return sv + "K"
+  elif value < 1000000000:
+    sv = str(int(value / (1024*1024)))
+    if len(sv) == 1:
+      sv = "{0:.1f}".format(value / (1024. * 1024))
+    return sv + "M"
+  else:
+    sv = str(int(value / (1024*1024*1024)))
+    if len(sv) == 1:
+      sv = "{0:.1f}".format(value / (1024. * 1024 * 1024))
+    return sv + "G"
+jenv.filters["fsize"] = fsize
+  
 ##############################################################################
 ## Base
 
@@ -36,17 +77,43 @@ pages["base.html"] = """
 <html>
 <head>
 <title>{{ page.title }}</title>
+
 <style>
+body {
+  font-family: arial, sans-serif;
+}
 #nav ul {
-  margin-left: 5;
-  padding-left: 0;
-  display: inline;
+  margin: 0;
+  padding: 0;
+  float: left;
+  width: 100%;
+  list-style-type: none;
 }
 #nav li {
-  border: 0px solid #000;
-  display: inline;
+  /* border: 0px solid #000; */
+  /* display: inline; */
+  appearance: button;
+  -moz-appearance: button;
+  padding: 2;
+  float: left;
+  margin: 2;
 }
+#nav a {
+  text-decoration: none;
+  color: black;
+}
+h1 {
+  font-size: 13pt;
+  margin: 0;
+  padding: 0;
+}
+table {
+  margin: 0;
+  padding: 0;
+}
+
 </style>
+
 </head>
 
 <body>
@@ -55,13 +122,20 @@ pages["base.html"] = """
 <table width="99%" border="0">
 <tr>
   <td><p>{{ page.title }}</p></td>
-  <td align="right">{{ page.gen }}</td>
+  <td align="right">Gen {{ page.gen | date }}</td>
 </tr>
 <table>
 {% endblock %}
 
 {% block content %}
 <p>NO CONTENT</p>
+{% endblock %}
+
+{% block program %}
+<h1>Program</h1>
+{{proc.euid}}eiud 
+{{proc.egid}}egid
+{{proc.pid}}pid
 {% endblock %}
 
 </body>
@@ -78,8 +152,9 @@ class Base:
     self.ctx = dict()
     self.ctx["page"] = self
     self.title = f("Base {rp}")
-    self.gen = datetime.datetime.now().isoformat(" ")
+    self.gen = time.time()
     self.ctx["model"] = self.model = Model()
+    self.ctx["proc"] = proc
 
   def render(self):
     return type(self).tmpl.render(self.ctx)
@@ -90,7 +165,14 @@ class Base:
 pages["file.html"] = """
 {% extends "base.html" %}
 {% block content %}
-FILE
+<table>
+{% for key in model.file.props %}
+<tr>
+  <td>{{key}}</td>
+  <td>{{model.file.props[key]}}</td>
+</tr>
+{% endfor %}
+</table>
 {% endblock %}
 """
 
@@ -99,6 +181,7 @@ class EFile(Base):
   
   def __init__(self,file):
     super().__init__(file.path)
+    self.title = f("EFile {file.path}")
     self.file = file
     self.model.file = file 
 
@@ -108,7 +191,9 @@ class EFile(Base):
 pages["reg.html"] = """
 {% extends "base.html" %}
 {% block content %}
-REG
+<pre>
+{{model.data}}
+</pre>
 {% endblock %}
 """
 
@@ -117,6 +202,10 @@ class Reg(EFile):
   
   def __init__(self,file):
     super().__init__(file)
+    self.title = f("Reg {file.path}")
+    fd = open(file.path)
+    self.model.data = fd.read()
+    fd.close()
 
 ##############################################################################
 ## 2 Dir
@@ -125,7 +214,7 @@ pages["dir.html"] = """
 {% extends "base.html" %}
 {% block content %}
 
-Dirs ({{model.file_dirs | count}}): 
+<h1>Dirs {{model.file_dirs | count}}n</h1> 
 <div id="nav">
 <ul>
 {% for file in model.file_dirs | sort(attribute="name") %}
@@ -134,14 +223,27 @@ Dirs ({{model.file_dirs | count}}):
 <ul>
 </div>
 
-Files 
-{{model.file_files | count}}, 
-{{model.file_files | sum(attribute="size") | filesizeformat}}
+<h1>Files 
+{{model.file_files | count}}n 
+{{model.file_files | sum(attribute="size") | fsize}}
+</h1>
 <table>
+<thead>
+ <tr>
+   <th align="left">T</th>
+   <th align="left">Mode</th>
+   <th align="left">Name</th>
+   <th align="left">Size</th>
+   <th align="left">MTime</th>
+ </tr>
+</thead>
 {% for file in model.file_files | sort(attribute="name") %}
 <tr>
+ <td>{{file.chtype}}</td>
+ <td>{{file.mode | noct}}</td>
  <td><a href="{{file.path}}">{{file.name}}</a></td>
- <td>{{file.size | filesizeformat(binary=True)}}</tr>
+ <td align="right">{{file.size | fsize}}</td>
+ <td>{{file.mtime | sdate }}</td>
 </tr>
 {% endfor %}
 </table>
@@ -232,15 +334,15 @@ def make_entry2(rp):
   if file.isdir:
     return Dir(file)
   elif file.ischr:
-    return Base(file)
+    return EFile(file)
   elif file.isblk:
-    return Base(file)
+    return EFile(file)
   elif file.isreg:
     return Reg(file)
   elif file.islnk:
     return Link(file)
   elif file.issock:
-    return Base(file)
+    return EFile(file)
   else:
     return Error(rp,"Unknown system file")
   
@@ -262,11 +364,20 @@ def index(rp):
 host='localhost'
 port=8080
   
+class Proc: pass
+proc = Proc()
+proc.host = host
+proc.port = port
+proc.cwd = os.getcwd()
+proc.euid = os.geteuid()
+proc.egid = os.getegid()
+proc.pid = os.getpid()
+  
 def start_browser():
   webbrowser.open(f("http://{host}:{port}"), 0, True)
     
 if __name__ == "__main__":
   logging.basicConfig(level=logging.DEBUG)  
-  Timer(4,start_browser).start()
+  Timer(2,start_browser).start()
   run(host=host,port=port)
   
