@@ -48,7 +48,6 @@ def noct(value:int):
   return "{0:o}".format(value)
 jenv.filters["noct"] = noct
 
-  
 ## file size presentation
 def fsize(value:int):
   if value < 1000:
@@ -69,6 +68,11 @@ def fsize(value:int):
       sv = "{0:.1f}".format(value / (1024. * 1024 * 1024))
     return sv + "G"
 jenv.filters["fsize"] = fsize
+
+def objtype(value:object):
+  return str(type(value))
+jenv.filters["objtype"] = objtype
+
   
 ##############################################################################
 ## Base
@@ -159,6 +163,18 @@ class Base:
   def render(self):
     return type(self).tmpl.render(self.ctx)
 
+def make_rplist(rp):
+  r = list()
+  p = rp
+  t = os.path.split(p)
+  r.append(t[1])
+  while t[1] is not '':
+    p = t[0]
+    t = os.path.split(p)
+    r.append(t[1])
+  r.reverse()
+  return r
+
 ##############################################################################
 ## 1 EFile
 
@@ -189,10 +205,10 @@ class EFile(Base):
 ## 1 reg
 
 pages["reg.html"] = """
-{% extends "base.html" %}
+{% extends "file.html" %}
 {% block content %}
 <pre>
-{{model.data}}
+{{model.data | e}}
 </pre>
 {% endblock %}
 """
@@ -202,10 +218,34 @@ class Reg(EFile):
   
   def __init__(self,file):
     super().__init__(file)
-    self.title = f("Reg {file.path}")
-    fd = open(file.path)
-    self.model.data = fd.read()
-    fd.close()
+    self.title = f("Reg {file.path}")    
+    self.model.data = self.make_file_data()
+    
+  def make_file_data(self):
+    try:
+      fd = open(self.file.path)
+      data = fd.read() # utf-8 decoding
+      fd.close()
+    except UnicodeDecodeError as ex:
+      data = make_binary_data(self.file.path)
+    return data
+  
+## http://code.activestate.com/recipes/576945/
+
+fhex = lambda data: ' '.join('{:02X}'.format(i) for i in data)
+
+fstr = lambda data: ''.join(31 < i < 127 and chr(i) or '.' for i in data)
+  
+def make_binary_data(path):
+  rdata = list()
+  rdata.append("{0} first bytes from {1}:".format(16*64,path))
+  file = open(path, 'rb')
+  for line in range(0, min(os.path.getsize(path),16*64), 16):
+    data = file.read(16)
+    rdata.append('{:08X} | {:47} | {}'.format(line, fhex(data), fstr(data)))
+  file.close()
+  return "\n".join(rdata)
+    
 
 ##############################################################################
 ## 2 Dir
@@ -277,6 +317,9 @@ pages["error.html"] = """
 {% extends "base.html" %}
 {% block content %}
 <p>
+{{ model.ex | objtype | e}}
+</p>
+<p>
 {{ model.extext }}
 </p>
 {% endblock %}
@@ -326,7 +369,7 @@ class Dev(EFile):
 ##############################################################################
 ## Code
 
-def make_entry2(rp):  
+def make_entry(rp):  
   try:
     file = File(rp)
   except OSError as ex:
@@ -346,7 +389,7 @@ def make_entry2(rp):
   else:
     return Error(rp,"Unknown system file")
   
-def make_entry(rp):
+def make_entry2(rp):
   try:
     return make_entry2(rp)
   except Exception as ex:
@@ -379,5 +422,5 @@ def start_browser():
 if __name__ == "__main__":
   logging.basicConfig(level=logging.DEBUG)  
   Timer(2,start_browser).start()
-  run(host=host,port=port)
+  run(host=host,port=port,debug=True)
   

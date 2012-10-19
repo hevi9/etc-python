@@ -3,4 +3,5 @@ encoding//proto/file.py=utf-8
 encoding//proto/filebrowser01.py=utf-8
 encoding//proto/procls01.py=utf-8
 encoding//proto/procls02.py=utf-8
+encoding//proto/test_filebrowser.py=utf-8
 encoding//proto/test_util.py=utf-8
