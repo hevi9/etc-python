@@ -44,6 +44,7 @@ def sdate(value:float):
   return datetime.datetime.fromtimestamp(value).strftime("%y%m")
 jenv.filters["sdate"] = sdate
 
+## octal
 def noct(value:int):
   return "{0:o}".format(value)
 jenv.filters["noct"] = noct
@@ -69,6 +70,7 @@ def fsize(value:int):
     return sv + "G"
 jenv.filters["fsize"] = fsize
 
+## pipe object type
 def objtype(value:object):
   return str(type(value))
 jenv.filters["objtype"] = objtype
