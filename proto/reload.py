@@ -25,10 +25,15 @@ class Cmd:
     self.poll = select.poll()
     
   def begin(self):
+    log.debug("begin: {0}".format(" ".join(self.params)))
     self.proc = subprocess.Popen(self.params, 
-      stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      stdout=subprocess.PIPE, stderr=subprocess.PIPE)    
     self.poll.register(self.proc.stdout, select.POLLIN | select.POLLHUP)
     self.poll.register(self.proc.stderr, select.POLLIN | select.POLLHUP)
+
+  def end(self):
+    self.proc.wait()
+    self.proc = None
 
   def pull(self):
     for event in self.poll.poll():
@@ -65,10 +70,16 @@ def iter():
     yield line + "\n"
     line = cmd.pull()
   yield FOOTER
-  
-ui = CUI()
+  cmd.end()
+ 
+def argscall(parser):
+  parser.add_argument("param",
+    nargs=argparse.REMAINDER,
+    help="parameters")
+   
+ui = CUI(argscall=argscall)
 cmd = Cmd(ui.args.param)
-run(host='localhost', port=8080)
+run(host='localhost', port=8080, debug=True)
   
   
   

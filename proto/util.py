@@ -95,7 +95,7 @@ __all__.append("f")
 class CUI:
   """ """
 
-  def __init__(self):
+  def __init__(self,**kwds):
     ## handle command line arguments
     self.parser = argparse.ArgumentParser(
       description=""" CUI """,
@@ -103,6 +103,8 @@ class CUI:
       )
     ## declare options
     self._init_args()
+    argscall = kwds.get("argscall",None)
+    if argscall: argscall(self.parser)
     ## parse command line args
     self.args = self.parser.parse_args() ### !!!
     ## setup logging
@@ -115,9 +117,6 @@ class CUI:
       logging.getLogger().setLevel(logging.INFO)
 
   def _init_args(self):
-    self.parser.add_argument("param",
-      nargs="*",
-      help="parameters")
     self.parser.add_argument("--debug",
       action="store_true",
       help="Activate debugging output")
