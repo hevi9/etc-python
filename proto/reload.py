@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 ## -*- coding: utf-8 -*-
 ## Copyright (C) 2012 Petri Heinilä, License LGPL 2.1
-""" """
+""" Run a command on web. """
 
 ##############################################################################
 ## Uses
