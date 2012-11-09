@@ -7,13 +7,16 @@
 ## Uses
 
 import sys # http://docs.python.org/py3k/library/sys.html
+import os # http://docs.python.org/py3k/library/os.html
 import argparse # http://docs.python.org/py3k/library/argparse.html
 import subprocess # http://docs.python.org/py3k/library/subprocess.html
 import logging # http://docs.python.org/py3k/library/logging.html
 import select # http://docs.python.org/py3k/library/select.html
+import socket # http://docs.python.org/py3k/library/select.html
 log = logging.getLogger(__name__)
 from util import CUI
 from bottle import route, run
+from jinja2 import Template # http://jinja.pocoo.org/docs/
 
 ##############################################################################
 ## 
@@ -33,6 +36,9 @@ class Cmd:
 
   def end(self):
     self.proc.wait()
+    log.debug("end:")
+    self.poll.unregister(self.proc.stdout)
+    self.poll.unregister(self.proc.stderr)
     self.proc = None
 
   def pull(self):
@@ -54,22 +60,51 @@ class Cmd:
 ##############################################################################
 ## 
   
-HEADER="""
+tmpl_header=Template("""
+<head>
+<title>{{title}}</title>
+<style>{{style}}</style>
+</head>
+<body>
+
+<div class="topbar">
+<ul>
+<li>{{title}}</li>
+<li>@{{hostname}}</li>
+</ul>
+</div>
+
 <pre>
-"""
-FOOTER="""
+""")
+
+tmpl_footer=Template("""
+</body>
 </pre>
-"""
+""")
+  
+def load_style():
+  stylefile = os.path.join(os.path.dirname(__file__),"reload_style.css")
+  log.debug("load_style: {0}".format(stylefile))
+  f = open(stylefile)
+  text = f.read()
+  f.close()
+  return text
+
   
 @route('/')
 def iter():
+  data=dict()
+  data["title"] = " ".join(cmd.params)
+  data["style"] = tmpl_style
+  data["hostname"] = socket.getfqdn()
+  ##
   cmd.begin()
-  yield HEADER
+  yield tmpl_header.render(data)
   line = cmd.pull()
   while line is not None:
     yield line + "\n"
     line = cmd.pull()
-  yield FOOTER
+  yield tmpl_footer.render(data)
   cmd.end()
  
 def argscall(parser):
@@ -78,6 +113,7 @@ def argscall(parser):
     help="parameters")
    
 ui = CUI(argscall=argscall)
+tmpl_style = load_style()
 cmd = Cmd(ui.args.param)
 run(host='localhost', port=8080, debug=True)
   
