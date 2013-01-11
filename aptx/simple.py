@@ -12,10 +12,20 @@ import sys # http://docs.python.org/py3k/library/sys.html
 import argparse # http://docs.python.org/py3k/library/argparse.html
 import logging # http://docs.python.org/py3k/library/logging.html
 log = logging.getLogger(__name__)
-import apt_pkg
+import apt_pkg # http://apt.alioth.debian.org/python-apt-doc/library/apt_pkg.html
+import apt
+import apt.progress.base
 
 ##############################################################################
 ## Code
+
+class Progress(apt.progress.base.OpProgress):
+  
+  def done(self):
+    pass
+  
+  def update(self):
+    pass
 
 def run():
   apt_pkg.init()
