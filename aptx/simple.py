@@ -22,13 +22,17 @@ import apt.progress.base
 class Progress(apt.progress.base.OpProgress):
   
   def done(self):
-    pass
+    log.debug("{0} {1} DONE".format(self.op,self.subop))
   
   def update(self):
-    pass
+    log.debug("{0} {1}".format(self.op,self.subop))
 
 def run():
   apt_pkg.init()
+  cache = apt_pkg.Cache(Progress())
+  #
+  for pf in cache.file_list:
+    log.debug("{0}".format(pf.filename)) 
 
 ##############################################################################
 ## Running
