@@ -21,6 +21,7 @@ class Board(QtGui.QWidget):
         self.map[r].append(None)
     # image
     self.xmark = QtGui.QImage("x.png")
+    self.omark = QtGui.QImage("o.png")
           
   def paintEvent(self, event):
     painter = QtGui.QPainter()
