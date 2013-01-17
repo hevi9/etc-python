@@ -11,14 +11,16 @@ class Board(QtGui.QWidget):
   def __init__(self):
     super().__init__()
     self.setMinimumSize(200, 200)
-    self.rows = 5
-    self.cols = 5
+    self.rows = 10
+    self.cols = 10
     ## init Map
     self.map = list() # rows
     for r in range(0,self.rows):
       self.map.append(list())
       for c in range(0,self.cols):
         self.map[r].append(None)
+    # image
+    self.xmark = QtGui.QImage("x.png")
           
   def paintEvent(self, event):
     painter = QtGui.QPainter()
@@ -38,6 +40,7 @@ class Board(QtGui.QWidget):
     log.debug("mousePressEvent row={0}, col={1}".format(r,c))
     #
     self.set(r,c,"X")
+    self.repaint()
 
   def draw(self,p):
     size = self.size()
@@ -55,11 +58,16 @@ class Board(QtGui.QWidget):
     step = int(round(w / self.cols))
     for i in range(step, w, step):
       p.drawLine(i,0,i,h)
+    # scaled image
+    image = self.xmark.scaled(w / self.cols, h / self.rows)
     # draw unit
     for r in range(0,self.rows):
       for c in range(0,self.cols):
         if self.map[r][c] is not None:
-          pass
+          x = c * round(w / self.cols)
+          y = r * round(h / self.rows)
+          p.drawImage(x,y,image)
+    del image
         
   def set(self,row,col,value=None):
     self.map[row][col] = value
