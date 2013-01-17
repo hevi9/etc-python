@@ -40,7 +40,10 @@ class Board(QtGui.QWidget):
     c = int(x / (w / self.cols))
     log.debug("mousePressEvent row={0}, col={1}".format(r,c))
     #
-    self.set(r,c,"X")
+    if x % 2 == 0:
+      self.set(r,c,"X")
+    else:
+      self.set(r,c,"O")
     self.repaint()
 
   def draw(self,p):
@@ -60,15 +63,20 @@ class Board(QtGui.QWidget):
     for i in range(step, w, step):
       p.drawLine(i,0,i,h)
     # scaled image
-    image = self.xmark.scaled(w / self.cols, h / self.rows)
+    ximage = self.xmark.scaled(w / self.cols, h / self.rows)
+    oimage = self.omark.scaled(w / self.cols, h / self.rows)
     # draw unit
     for r in range(0,self.rows):
       for c in range(0,self.cols):
         if self.map[r][c] is not None:
           x = c * round(w / self.cols)
           y = r * round(h / self.rows)
-          p.drawImage(x,y,image)
-    del image
+          if self.map[r][c] == "X":
+            p.drawImage(x,y,ximage)
+          else:
+            p.drawImage(x,y,oimage)
+    del ximage
+    del oimage
         
   def set(self,row,col,value=None):
     self.map[row][col] = value
