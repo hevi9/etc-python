@@ -6,10 +6,14 @@ from PyQt4 import QtGui, QtCore # http://www.riverbankcomputing.com/static/Docs/
 import logging
 log = logging.getLogger(__name__)
 
+##############################################################################
+## Game Board
+
 class Board(QtGui.QWidget):
   
-  def __init__(self):
+  def __init__(self,ui):
     super().__init__()
+    self.ui = ui
     self.setMinimumSize(200, 200)
     self.rows = 10
     self.cols = 10
@@ -45,6 +49,7 @@ class Board(QtGui.QWidget):
     else:
       self.set(r,c,"O")
     self.repaint()
+    self.ui.place(r,c)
 
   def draw(self,p):
     size = self.size()
@@ -80,8 +85,10 @@ class Board(QtGui.QWidget):
         
   def set(self,row,col,value=None):
     self.map[row][col] = value
-        
-    
+
+##############################################################################
+## Ui
+            
 class Ui(QtGui.QWidget):
   
   def __init__(self):
@@ -89,18 +96,59 @@ class Ui(QtGui.QWidget):
     self.init_layout()
     
   def init_layout(self):
+    vbox = QtGui.QVBoxLayout()
+    #
+    self.status = QtGui.QLabel("status")
+    vbox.addWidget(self.status)
+    #
+    self.board = Board(self)
+    vbox.addWidget(self.board,1) # 1 = resize this part
+    #
+    hbox = QtGui.QHBoxLayout()
+    vbox.addLayout(hbox)
+    self.host = QtGui.QLineEdit("localhost")
+    hbox.addWidget(self.host)
+    self.port = QtGui.QLineEdit("12345")
+    hbox.addWidget(self.port)
+    self.go = QtGui.QPushButton("Go")
+    self.go.clicked.connect(self.go_clicked)
+    hbox.addWidget(self.go)
+    #
+    self.msgs = QtGui.QTextEdit()
+    self.msgs.setReadOnly(True)
+    self.msgs.setSizePolicy(QtGui.QSizePolicy
+                            (QtGui.QSizePolicy.Expanding,
+                             QtGui.QSizePolicy.Minimum))
+    vbox.addWidget(self.msgs)
+    self.enter = QtGui.QLineEdit()
+    self.enter.returnPressed.connect(self.enter_returnPressed)
+    vbox.addWidget(self.enter)
     #
     self.setGeometry(150,150,150,150)
     self.setWindowTitle("TTT UI")
-    #
-    self.board = Board()
-    self.board2 = Board()
-    hbox = QtGui.QHBoxLayout()
-    hbox.addWidget(self.board)
-    hbox.addWidget(self.board2)
-    self.setLayout(hbox)
-    #
+    self.setLayout(vbox)
     self.show()
+    
+  def msg(self,text):
+    #self.msgs.append(text)
+    self.msgs.insertHtml(text + "<br/>\n")
+    sb = self.msgs.verticalScrollBar()
+    sb.setValue(sb.maximum())
+    
+  def place(self,row,col):
+    self.msg('<div style="color:blue">Place ({0},{1})</div>'.format(row,col))
+    
+  def enter_returnPressed(self):
+    log.debug("enter_returnPressed " + self.enter.text())
+    self.msg("<i>" + self.enter.text() + "</i>")
+    self.enter.clear()
+  
+  def go_clicked(self):
+    log.debug("go_clicked")
+    
+  
+##############################################################################
+##    
     
 def run():
   app = QtGui.QApplication(sys.argv)
