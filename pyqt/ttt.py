@@ -43,12 +43,6 @@ class Board(QtGui.QWidget):
     r = int(y / (h / self.rows))
     c = int(x / (w / self.cols))
     log.debug("mousePressEvent row={0}, col={1}".format(r,c))
-    #
-    if x % 2 == 0:
-      self.set(r,c,"X")
-    else:
-      self.set(r,c,"O")
-    self.repaint()
     self.ui.place(r,c)
 
   def draw(self,p):
@@ -85,6 +79,7 @@ class Board(QtGui.QWidget):
         
   def set(self,row,col,value=None):
     self.map[row][col] = value
+    self.repaint()
 
 ##############################################################################
 ## Ui
@@ -135,17 +130,31 @@ class Ui(QtGui.QWidget):
     sb = self.msgs.verticalScrollBar()
     sb.setValue(sb.maximum())
     
+  def error(self,text):
+    self.msg('<div style="color:red">Error {0}</div>'.format(text))
+        
   def place(self,row,col):
     self.msg('<div style="color:blue">Place ({0},{1})</div>'.format(row,col))
+    #
+    if row * col % 2 == 0:
+      self.board.set(row,col,"X")
+    else:
+      self.board.set(row,col,"O")    
     
   def enter_returnPressed(self):
     log.debug("enter_returnPressed " + self.enter.text())
     self.msg("<i>" + self.enter.text() + "</i>")
     self.enter.clear()
   
-  def go_clicked(self):
-    log.debug("go_clicked")
-    
+  def go_clicked(self):    
+    host = self.host.text()
+    try:
+      port = int(self.port.text())
+    except ValueError as ex:
+      self.error(str(ex))
+      return 
+    log.debug("go_clicked {0} {1}".format(host,port))
+    self.msg('<div style="color:green">Connect to {0} {1}</div>'.format(host,port))
   
 ##############################################################################
 ##    
