@@ -15,8 +15,8 @@ class Board(QtGui.QWidget):
     super().__init__()
     self.ui = ui
     self.setMinimumSize(200, 200)
-    self.rows = 10
-    self.cols = 10
+    self.rows = 5
+    self.cols = 5
     ## init Map
     self.map = list() # rows
     for r in range(0,self.rows):
