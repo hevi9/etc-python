@@ -13,7 +13,7 @@ import unittest # http://docs.python.org/py3k/library/unittest.html
 import logging # http://docs.python.org/py3k/library/logging.html
 log = logging.getLogger(__name__)
 
-from filebrowser01 import *
+from hevi_proto.filebrowser import *
 
 ##############################################################################   
 ## Test base
@@ -33,9 +33,9 @@ class test_filebrowser(TestBase):
 
   def test_make_rplist(self):
     """ rplist """
-    print(make_rplist("/"))
-    print(make_rplist("/home"))
-    print(make_rplist("/home/hevi"))
+    assert make_rplist("/") == ['']
+    assert make_rplist("/home") == ['', 'home']
+    assert make_rplist("/home/hevi") == ['', 'home', 'hevi']
 
 ##############################################################################
 ## This file activation  

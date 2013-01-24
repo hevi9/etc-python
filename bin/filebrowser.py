@@ -24,6 +24,7 @@ from bottle import route, run, jinja2_template
 log = logging.getLogger(__name__)
 from hevi_proto.util import f
 from hevi_proto.file import File
+from hevi_proto.filebrowser import *
 
 ##############################################################################
 ## Templating
@@ -165,17 +166,6 @@ class Base:
   def render(self):
     return type(self).tmpl.render(self.ctx)
 
-def make_rplist(rp):
-  r = list()
-  p = rp
-  t = os.path.split(p)
-  r.append(t[1])
-  while t[1] is not '':
-    p = t[0]
-    t = os.path.split(p)
-    r.append(t[1])
-  r.reverse()
-  return r
 
 ##############################################################################
 ## 1 EFile

@@ -13,7 +13,7 @@ import os # http://docs.python.org/py3k/library/os.html
 import unittest # http://docs.python.org/py3k/library/unittest.html
 import logging # http://docs.python.org/py3k/library/logging.html
 log = logging.getLogger(__name__)
-from .util import PropsDict
+from hevi_proto.util import PropsDict
 
 ##############################################################################   
 ## Test base
