@@ -12,24 +12,12 @@ import os # http://docs.python.org/py3k/library/os.html
 import unittest # http://docs.python.org/py3k/library/unittest.html
 import logging # http://docs.python.org/py3k/library/logging.html
 log = logging.getLogger(__name__)
-
 from hevi_proto.filebrowser import *
 
-##############################################################################   
-## Test base
-
-class TestBase(unittest.TestCase):
-
-  def setUp(self):
-    unittest.TestCase.setUp(self)
-    
-  def tearDown(self):
-    unittest.TestCase.tearDown(self)
-
 #############################################################################
-## Test Thing
+## tests
 
-class test_filebrowser(TestBase):
+class test_filebrowser(unittest.TestCase):
 
   def test_make_rplist(self):
     """ rplist """
