@@ -1,9 +1,9 @@
 eclipse.preferences.version=1
-encoding//proto/file.py=utf-8
-encoding//proto/filebrowser01.py=utf-8
-encoding//proto/procls01.py=utf-8
-encoding//proto/procls02.py=utf-8
-encoding//proto/reload.py=utf-8
-encoding//proto/test_filebrowser.py=utf-8
-encoding//proto/test_util.py=utf-8
-encoding//proto/webps.py=utf-8
+encoding//bin/filebrowser01.py=utf-8
+encoding//bin/procls01.py=utf-8
+encoding//bin/procls02.py=utf-8
+encoding//bin/reload.py=utf-8
+encoding//bin/webps.py=utf-8
+encoding//hevi_proto/file.py=utf-8
+encoding//test/test_filebrowser.py=utf-8
+encoding//test/test_util.py=utf-8
