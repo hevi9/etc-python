@@ -14,7 +14,8 @@ import logging # http://docs.python.org/py3k/library/logging.html
 import select # http://docs.python.org/py3k/library/select.html
 import socket # http://docs.python.org/py3k/library/select.html
 log = logging.getLogger(__name__)
-from util import CUI
+import hevi_proto
+from hevi_proto.util import CUI
 from bottle import route, run
 from jinja2 import Template # http://jinja.pocoo.org/docs/
 
@@ -83,7 +84,7 @@ tmpl_footer=Template("""
 """)
   
 def load_style():
-  stylefile = os.path.join(os.path.dirname(__file__),"reload_style.css")
+  stylefile = os.path.join(os.path.dirname(hevi_proto.__file__),"reload_style.css")
   log.debug("load_style: {0}".format(stylefile))
   f = open(stylefile)
   text = f.read()

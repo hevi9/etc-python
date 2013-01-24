@@ -1,8 +1,6 @@
 Python idea prototypes
 **********************
 
-.. include:: /doc/template
-
 Requirements
 ============
 

@@ -22,8 +22,8 @@ import stat # http://docs.python.org/py3k/library/stat.html
 from threading import Timer 
 from bottle import route, run, jinja2_template
 log = logging.getLogger(__name__)
-from util import f
-from file import File
+from hevi_proto.util import f
+from hevi_proto.file import File
 
 ##############################################################################
 ## Templating

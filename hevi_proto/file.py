@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 import stat # http://docs.python.org/py3k/library/stat.html
 import inspect # http://docs.python.org/py3k/library/inspect.html
 import mimetypes # http://docs.python.org/py3k/library/mimetypes.html
-from util import PropsDict
+from .util import PropsDict
 ## python-magic don't work
 #import magic # https://github.com/ahupp/python-magic
 
