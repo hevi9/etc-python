@@ -2,6 +2,11 @@
 Utilities collection
 ********************
 
+Usage::
+  from .util import *
+  or
+  from hevi_proto.util import *
+
 PropsDict
 =========
 
@@ -9,8 +14,6 @@ Iterable entry point for class properties. Properties
 in enrty are readonly.
 
 Usage::
-  from util import PropsDict
-  ..
   class MyData:
     def __init__(self):
       self.props = PropsDict(self)
@@ -19,8 +22,8 @@ Usage::
     def data(self):
       return self._value
   ..
-  obj = MyData(
-  for key in obj:
+  obj = MyData()
+  for key in obj.props:
     print("{0} = {1}".format(key,obj.props[key])
     
 f is for a format
@@ -30,15 +33,17 @@ Convience format function that takes format keys directly
 from locals and globals.
 
 Usage::
-  from util import f
-  ..
   b = 100
   def func():
     a = "value"
-    log.debug(f"{a} and {b}")
+    log.debug(f("{a} and {b}"))
     
 CUI
 ===
+
+Usage::
+
+
 """
 
 ##############################################################################
@@ -88,6 +93,8 @@ def f(s):
   combi.update(caller.f_locals)
   return s.format(**combi)
 __all__.append("f")
+format = f
+__all__.append("format")
 
 ##############################################################################
 ## CUI
