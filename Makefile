@@ -9,3 +9,6 @@ clean::
 	$(RMALL) build
 	$(RMALL) dist
 	$(RMALL) hevi_proto.egg-info
+	
+dev:
+	python3 setup.py develop

@@ -18,7 +18,7 @@ datas = [f for f in os.listdir("hevi_proto") if isdata(f)]
 
 setup(
   name='hevi_proto',
-  version='0.1',
+  version='0.1.1',
   description='Prototype ideas',
   author='Petri Heinilä',
   url='http://github.com/hevi9/hevi_proto',
@@ -26,8 +26,7 @@ setup(
   scripts = scripts,
   package_data = {'hevi_proto': datas},
   entry_points={
-          'console_scripts':
-              ['release = zest.releaser.release:main',
-               'prerelease = zest.releaser.prerelease:main',
-               ]}
+    'console_scripts':
+      ['pyild = hevi_proto.pyild:main']
+  }
 )

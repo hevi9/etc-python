@@ -16,3 +16,5 @@ start
   make
   make install
   """)
+
+cd wayland is problematic
