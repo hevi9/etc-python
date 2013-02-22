@@ -196,8 +196,10 @@ port=8080
 def start_browser():
   webbrowser.open(f("http://{host}:{port}"), 0, True)
     
-if __name__ == "__main__":
+def main():
   logging.basicConfig(level=logging.DEBUG)  
   Timer(4,start_browser).start()
   run(host=host,port=port)
-  
+    
+if __name__ == "__main__": main()
+

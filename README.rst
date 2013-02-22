@@ -5,8 +5,6 @@ Python idea prototypes
 
 
 
-
-
 Python Data Object
 ==================
 
@@ -38,7 +36,7 @@ Iterate all data members usage::
   for d in file.data:
     print("  " + d)
 
-Related::
+Related:
 
 .. _d1: http://docs.python.org/howto/descriptor.html
 .. _d2: http://wiki.python.org/moin/PythonDecoratorLibrary
@@ -201,18 +199,21 @@ html tags immediately.
 State Machine
 =============
 
-class Sample:
+presentations::
+
+  class Sample:
   
-  states = STATE("INIT","CONN","READY")
+    states = STATE("INIT","CONN","READY")
   
-  states = (
-    STATE(      "INIT","CONN","READY")
-    IN("input1","CONN"  )
-  )
+    states = (
+      STATE(      "INIT","CONN","READY")
+      IN("input1","CONN"  )
+    )
   
-  jj = {
-    input1: ("CONN",)
-  }
+    jj = {
+      input1: ("CONN",)
+    }
+
 
 
 

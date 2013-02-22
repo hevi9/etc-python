@@ -2,6 +2,4 @@
 Python idea prototypes
 **********************
 
-
-
 """
