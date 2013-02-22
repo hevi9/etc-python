@@ -2,7 +2,16 @@
 ## -*- coding: utf-8 -*-
 ## Copyright (C) 2012 Petri Heinilä, License LGPL 2.1
 """
-Web Process List.
+Web process list
+================
+
+Presenting linux process list in web efficient way. 
+
+Resources
+
+  * http://pypi.python.org/pypi/psutil
+  * http://code.google.com/p/psutil/
+
 """
 
 ##############################################################################

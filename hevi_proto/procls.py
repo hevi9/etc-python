@@ -2,7 +2,26 @@
 ## -*- coding: utf-8 -*-
 ## Copyright (C) 2012 Petri Heinilä, License LGPL 2.1
 """
-/proc prototyping.
+Linux /proc & /sys info discovery
+=================================
+
+
+Coding
+
+
+Monitoring changes in /proc. /proc and inotify ?
+
+Linux ps implementation ?
+
+Resources
+
+
+linux ps source code ? http://procps.sourceforge.net/
+
+linux /proc /sys monitoring systems
+
+https://github.com/seb-m/pyinotify
+
 """
 
 ##############################################################################

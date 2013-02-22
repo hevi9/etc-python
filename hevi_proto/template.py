@@ -1,5 +1,7 @@
-Proto: Template based file creation system
-******************************************
+"""
+Template based file creation system
+===================================
+
 
 Motivation: speedup start of programming by giving code skeleton for
 specific tasks.
@@ -14,4 +16,5 @@ Functionalities:
   * F21 (later) Complex jinja2 property substitution
   * F22 (later) Simple identifier key discovery from template files. 
 
-Related works: alot, but not independent, build into some system.  
+Related works: alot, but not independent, build into some system.
+"""  

@@ -1,7 +1,48 @@
 #!/usr/bin/env python3
 ## -*- coding: utf-8 -*-
 ## Copyright (C) 2012 Petri Heinilä, License LGPL 2.1
-""" Run a command on web. """
+""" 
+Run a command on web
+==================== 
+
+WebMake
+*******
+
+Ability to run a make or other "build" commands from browser and
+get build results into page.
+
+Motivation
+==========
+
+Presentation and management of build output text.
+
+Use
+===
+
+Start local process webappserver in current build directory::
+
+  /wrk/project> webmake.py
+  
+which open browser and runs make and redirects make stdout and stderr
+into web page text.
+
+Related
+=======
+
+CI (Continuous Integration) frameworks.
+
+Challenges
+==========
+
+ansi terminal code formatting of the output text.
+
+recursive submakes ?
+
+Continuous output and web-frameworks and html page structure. Producing
+the make output content may take 30mins but page structure needs end
+html tags immediately.   
+
+"""
 
 ##############################################################################
 ## Uses
@@ -113,10 +154,11 @@ def argscall(parser):
     nargs=argparse.REMAINDER,
     help="parameters")
    
-ui = CUI(argscall=argscall)
-tmpl_style = load_style()
-cmd = Cmd(ui.args.param)
-run(host='localhost', port=8080, debug=True)
+if __name__ == "__main__":
+  ui = CUI(argscall=argscall)
+  tmpl_style = load_style()
+  cmd = Cmd(ui.args.param)
+  run(host='localhost', port=8080, debug=True)
   
   
   

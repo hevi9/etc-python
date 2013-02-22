@@ -1,5 +1,8 @@
 
 
+"""
+State Machine
+=============
 
 class Sample:
   
@@ -13,3 +16,4 @@ class Sample:
   jj = {
     input1: ("CONN",)
   }
+"""

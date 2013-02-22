@@ -1,6 +1,6 @@
 """
-Utilities collection
-********************
+Utilities for idea prototypes
+=============================
 
 Usage::
   from .util import *
@@ -8,7 +8,7 @@ Usage::
   from hevi_proto.util import *
 
 PropsDict
-=========
+---------
 
 Iterable entry point for class properties. Properties
 in enrty are readonly.
@@ -27,7 +27,7 @@ Usage::
     print("{0} = {1}".format(key,obj.props[key])
     
 f is for a format
-=================
+-----------------
 
 Convience format function that takes format keys directly
 from locals and globals.

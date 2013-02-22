@@ -4,9 +4,11 @@ RMALL = rm -rf
 
 prefix=/usr/local
 
+modules = $(sort $(wildcard hevi_proto/*.py))
+
 .PHONY: install develop
 
-all:: develop
+all:: develop README.rst
 
 install:
 	python3 setup.py install --prefix=$(prefix)
@@ -21,3 +23,6 @@ clean::
 	
 develop:
 	python3 setup.py develop
+	
+README.rst: $(modules)
+	python3 etc/doccat.py $(modules) > README.rst
