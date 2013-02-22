@@ -2,18 +2,11 @@
 Python Data Object
 ==================
 
-Goals:
-
-  * Object data memmers accessed by @properties.
-  * Data members are iterable via some point.
-  * Data member description access from @property.__doc__ .
-  * Single point addition for new data member.
-  * Object's class inheritance.
+Goals: Object data memmers accessed by @properties. Data members are iterable 
+via some point. Data member description access from @property.__doc__ . Single 
+point addition for new data member. Object's class inheritance.
   
-Usage
------
-
-Define datamember::
+Define datamember usage::
 
   class File:
   
@@ -27,23 +20,19 @@ Define datamember::
       ''' Last modification time of the file. '''
       return self._st.st_mtime      
 
-Read data member::
+Read data member usage::
 
   file = File("/some/path")
   print(f.size)
 
-Iterate all data members::
+Iterate all data members usage::
 
   for d in file.data:
     print("  " + d)
 
-Links
------
+Related::
 
-http://docs.python.org/howto/descriptor.html
-
-http://wiki.python.org/moin/PythonDecoratorLibrary
-
-http://users.rcn.com/python/download/Descriptor.htm
-
+.. _d1: http://docs.python.org/howto/descriptor.html
+.. _d2: http://wiki.python.org/moin/PythonDecoratorLibrary
+.. _d3: http://users.rcn.com/python/download/Descriptor.htm
 """
