@@ -30,7 +30,7 @@ Iterate all data members usage::
   for d in file.data:
     print("  " + d)
 
-Related::
+Related:
 
 .. _d1: http://docs.python.org/howto/descriptor.html
 .. _d2: http://wiki.python.org/moin/PythonDecoratorLibrary
