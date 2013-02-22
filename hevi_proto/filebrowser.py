@@ -24,7 +24,25 @@ from bottle import route, run, jinja2_template
 log = logging.getLogger(__name__)
 from hevi_proto.util import f
 from hevi_proto.file import File
-from hevi_proto.filebrowser import *
+__all__ = list()
+
+##############################################################################
+## functions
+
+def make_rplist(rp):
+  """ Convert str path into list path. """
+  r = list()
+  p = rp
+  t = os.path.split(p)
+  r.append(t[1])
+  while t[1] is not '':
+    p = t[0]
+    t = os.path.split(p)
+    r.append(t[1])
+  r.reverse()
+  return r
+
+__all__.append(make_rplist.__name__)
 
 ##############################################################################
 ## Templating
