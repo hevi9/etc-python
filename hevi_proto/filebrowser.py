@@ -423,8 +423,14 @@ proc = Proc()
 proc.host = host
 proc.port = port
 proc.cwd = os.getcwd()
-proc.euid = os.geteuid()
-proc.egid = os.getegid()
+try:
+  proc.euid = os.geteuid()
+except AttributeError:
+  proc.euid = "win"
+try:
+  proc.egid = os.getegid()
+except AttributeError:
+  proc.egid = "win"
 proc.pid = os.getpid()
   
 def start_browser():
