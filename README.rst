@@ -36,7 +36,7 @@ Iterate all data members usage::
   for d in file.data:
     print("  " + d)
 
-Related:
+Related d1_ d2_ d3_
 
 .. _d1: http://docs.python.org/howto/descriptor.html
 .. _d2: http://wiki.python.org/moin/PythonDecoratorLibrary
@@ -52,6 +52,15 @@ File data access
 
 web File browser
 ================
+
+
+
+Blog composer and publisher.
+
+Usage::
+
+ > mkblog
+
 
 
 
@@ -192,27 +201,6 @@ recursive submakes ?
 Continuous output and web-frameworks and html page structure. Producing
 the make output content may take 30mins but page structure needs end
 html tags immediately.   
-
-
-
-
-State Machine
-=============
-
-presentations::
-
-  class Sample:
-  
-    states = STATE("INIT","CONN","READY")
-  
-    states = (
-      STATE(      "INIT","CONN","READY")
-      IN("input1","CONN"  )
-    )
-  
-    jj = {
-      input1: ("CONN",)
-    }
 
 
 

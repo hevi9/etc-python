@@ -81,12 +81,16 @@ make comparison::
 
 import logging # http://docs.python.org/py3k/library/logging.html
 log = logging.getLogger(__name__)
-from hevi_proto import *
+logging.basicConfig(level=logging.DEBUG)
+
+##############################################################################
+## 
 
 ##############################################################################
 ## entry
 
 def main():
   logging.basicConfig(level=logging.DEBUG)
-  log.debug("main()")
-  
+
+if __name__ == "__main__": main()  
+
