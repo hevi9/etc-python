@@ -37,7 +37,7 @@ setup(
   name='hevi_proto',
   version='0.1.1',
   description='Prototype ideas',
-  author='Petri Heinilä',
+  author='Petri Heinila',
   url='http://github.com/hevi9/hevi_proto',
   packages=['hevi_proto'],
   package_data = {'hevi_proto': datas},
