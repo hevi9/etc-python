@@ -92,6 +92,40 @@ logging.basicConfig(level=logging.DEBUG)
 ##############################################################################
 ## 
 
+class Space:
+  
+  def __init__(self):
+    self._targets = dict()
+    
+  def target(self,value):
+    return self._targets.get(value, Target(value))
+
+class Target:
+  
+  def __init__(self, value):
+    self._value = value
+    self._depends = list()
+    
+  def depend(self, depend):
+    self._depends.append(depend)
+    depend.target = self
+  
+class Depend:
+  
+  def __init__(self, func):
+    self._func = func
+    self._target = None
+    
+  @property
+  def target(self):
+    return self._target
+  
+  @target.setter
+  def target(self, value):
+    assert isinstance(value, Target)
+    self._target = value
+  
+
 ##############################################################################
 ## entry
 
