@@ -89,7 +89,7 @@ import logging # http://docs.python.org/py3k/library/logging.html
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
-##############################################################################
+################################################################(##############
 ## 
 
 class Space:
@@ -100,11 +100,31 @@ class Space:
   def target(self,value):
     return self._targets.get(value, Target(value))
 
+  def add_task(self,value,func):
+    target = self.target(value)
+    target.depend(Depend(func))
+
+  def execute(self, target):
+    if isinstance(target, str):
+      target = self._targets[target]
+    for depend in target.depends:
+      if depend.source is not None:
+        self.execute(depend.source)
+    for depend in target.depends:
+      depend.func()
+      
+
+space = Space()
+
 class Target:
   
   def __init__(self, value):
     self._value = value
     self._depends = list()
+    
+  @property
+  def depends(self):
+    return self._depends
     
   def depend(self, depend):
     self._depends.append(depend)
@@ -115,22 +135,39 @@ class Depend:
   def __init__(self, func):
     self._func = func
     self._target = None
+    self._source = None
     
   @property
   def target(self):
     return self._target
   
+  @property
+  def source(self):
+    return self._source
+  
   @target.setter
   def target(self, value):
     assert isinstance(value, Target)
     self._target = value
-  
 
+def task(func):
+  space.add_task(func.__name__, func)
+  return func
+  
 ##############################################################################
 ## entry
 
+@task
+def clean():
+  print("clean A")
+
+@task
+def clean():
+  print("clean B")
+
 def main():
   logging.basicConfig(level=logging.DEBUG)
+  space.execute("clean")
 
 if __name__ == "__main__": main()  
 
