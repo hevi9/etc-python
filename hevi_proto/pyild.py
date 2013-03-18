@@ -104,6 +104,7 @@ class Space:
     log.debug("add_task({}, {})".format(value,func))
     target = self.target(value)
     target.depend(Depend(func))
+    return target
 
   def execute(self, target):
     if isinstance(target, str):
@@ -128,6 +129,8 @@ class Target:
     return self._depends
     
   def depend(self, depend):
+    if not isinstance(depend, Target):
+      depend = space.target(depend)
     self._depends.append(depend)
     depend.target = self
   
@@ -159,13 +162,19 @@ def task(func):
   space.add_task(func.__name__, func)
   return func
 
-def task(deps=None):
-  log.debug("task({})".format(deps))
-  def warp(func):
-    log.debug("task.wrap({})".format(func))
-    space.add_task(func.__name__, func)
-    return func
-  return warp
+def task(arg1):
+  if callable(arg1): # as @task
+    log.debug("task({})".format(arg1))
+    space.add_task(arg1.__name__, arg1)
+    return arg1
+  else: # as task(args ..)
+    log.debug("task({})".format(arg1))
+    def warp(func):
+      log.debug("task.wrap({})".format(func))
+      target = space.add_task(func.__name__, func)
+      target.depend(arg1)
+      return func
+    return warp
 
   
 ##############################################################################
@@ -173,7 +182,7 @@ def task(deps=None):
 
 logging.basicConfig(level=logging.DEBUG)
 
-@task()
+@task
 def setup():
   print("setup A")
 
@@ -181,7 +190,7 @@ def setup():
 def clean():
   print("clean A")
 
-@task
+@task("setup")
 def clean():
   print("clean B")
 
@@ -192,7 +201,7 @@ def clean():
 
 def main():
   logging.basicConfig(level=logging.DEBUG)
-  space.execute("setup")
+  space.execute("clean")
 
 if __name__ == "__main__": main()  
 
