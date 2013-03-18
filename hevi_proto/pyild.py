@@ -158,11 +158,24 @@ class Depend:
 def task(func):
   space.add_task(func.__name__, func)
   return func
+
+def task(deps=None):
+  log.debug("task({})".format(deps))
+  def warp(func):
+    log.debug("task.wrap({})".format(func))
+    space.add_task(func.__name__, func)
+    return func
+  return warp
+
   
 ##############################################################################
 ## entry
 
 logging.basicConfig(level=logging.DEBUG)
+
+@task()
+def setup():
+  print("setup A")
 
 @task
 def clean():
@@ -172,9 +185,14 @@ def clean():
 def clean():
   print("clean B")
 
+@task
+def clean():
+  print("clean C")
+
+
 def main():
   logging.basicConfig(level=logging.DEBUG)
-  space.execute("clean")
+  space.execute("setup")
 
 if __name__ == "__main__": main()  
 
