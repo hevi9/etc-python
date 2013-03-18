@@ -98,9 +98,10 @@ class Space:
     self._targets = dict()
     
   def target(self,value):
-    return self._targets.get(value, Target(value))
+    return self._targets.setdefault(value, Target(value))
 
   def add_task(self,value,func):
+    log.debug("add_task({}, {})".format(value,func))
     target = self.target(value)
     target.depend(Depend(func))
 
@@ -145,6 +146,10 @@ class Depend:
   def source(self):
     return self._source
   
+  @property
+  def func(self):
+    return self._func
+  
   @target.setter
   def target(self, value):
     assert isinstance(value, Target)
@@ -156,6 +161,8 @@ def task(func):
   
 ##############################################################################
 ## entry
+
+logging.basicConfig(level=logging.DEBUG)
 
 @task
 def clean():
