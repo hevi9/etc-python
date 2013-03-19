@@ -37,12 +37,6 @@ Usage::
   def func():
     a = "value"
     log.debug(f("{a} and {b}"))
-    
-CUI
-===
-
-Usage::
-
 
 """
 

@@ -1,5 +1,6 @@
 """
-Blog composer and publisher.
+Blog composer and publisher
+===========================
 
 Usage::
 

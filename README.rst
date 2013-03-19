@@ -55,7 +55,8 @@ web File browser
 
 
 
-Blog composer and publisher.
+Blog composer and publisher
+===========================
 
 Usage::
 
@@ -162,27 +163,20 @@ make comparison::
 
 
 
-
-
-
-
  
 Run a command on web
 ==================== 
 
 WebMake
-*******
 
 Ability to run a make or other "build" commands from browser and
 get build results into page.
 
 Motivation
-==========
 
 Presentation and management of build output text.
 
 Use
-===
 
 Start local process webappserver in current build directory::
 
@@ -192,12 +186,10 @@ which open browser and runs make and redirects make stdout and stderr
 into web page text.
 
 Related
-=======
 
 CI (Continuous Integration) frameworks.
 
 Challenges
-==========
 
 ansi terminal code formatting of the output text.
 
@@ -219,13 +211,13 @@ specific tasks.
 
 Functionalities:
 
-  * F01 File and directory instantiation from templates
-  * F02 Discover roots and template directories and files
-  * F03 Property data creation, automatically or by user interaction
-  * F04 Simple identifier property substitution
-  * F05 Instantiation valid checks, no overwriting
-  * F21 (later) Complex jinja2 property substitution
-  * F22 (later) Simple identifier key discovery from template files. 
+  * File and directory instantiation from templates
+  * Discover roots and template directories and files
+  * Property data creation, automatically or by user interaction
+  * Simple identifier property substitution
+  * Instantiation valid checks, no overwriting
+  * (later) Complex jinja2 property substitution
+  * (later) Simple identifier key discovery from template files. 
 
 Related works: alot, but not independent, build into some system.
 
@@ -269,12 +261,6 @@ Usage::
   def func():
     a = "value"
     log.debug(f("{a} and {b}"))
-    
-CUI
-===
-
-Usage::
-
 
 
 

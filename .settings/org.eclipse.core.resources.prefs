@@ -6,5 +6,6 @@ encoding//hevi_proto/pyild.py=utf-8
 encoding//hevi_proto/reload.py=utf-8
 encoding//hevi_proto/webps.py=utf-8
 encoding//test/test_filebrowser.py=utf-8
+encoding//test/test_pyild.py=utf-8
 encoding//test/test_util.py=utf-8
 encoding/setup.py=utf-8

@@ -82,8 +82,11 @@ make comparison::
 ## Uses & module setup
 
 import logging # http://docs.python.org/py3k/library/logging.html
+import sys # http://docs.python.org/py3k/library/sys.html
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+from py._builtin import execfile
+
 
 ################################################################(##############
 ## execution dependency model
@@ -94,9 +97,17 @@ class Space:
   
   def __init__(self):
     self._targets = dict()
+    self._default = None
+    
+  @property 
+  def default(self):
+    return self._default
     
   def target(self,value):
-    return self._targets.setdefault(value, Target(value))
+    target = self._targets.setdefault(value, Target(value))
+    if self._default is None:
+      self._default = target
+    return target
   
   def execute(self, target):
     if isinstance(target, str):
@@ -115,12 +126,21 @@ class Space:
       
 space = Space()
 
+globals = dict()
+
 class Target:
   
   def __init__(self, value, space=space):
     self._value = value
     self._space = space
     self._depends = list() # Depend
+
+  def __str__(self):
+    return self._value
+
+  @property
+  def value(self):
+    return self._value
     
   @property
   def depends(self):
@@ -175,33 +195,14 @@ def task(arg1):
 ##############################################################################
 ## entry
 
-logging.basicConfig(level=logging.DEBUG)
-
-
-@task("pre1")
-def setup():
-  print("setup A")
-
-@task
-def clean():
-  print("clean A")
-
-@task("setup")
-def clean():
-  print("clean B")
-
-@task("clean")
-def clean():
-  print("clean C")
-
-@task
-def pre1():
-  print("pre1")
-
-
 def main():
   logging.basicConfig(level=logging.DEBUG)
-  space.execute("clean")
+  execfile("pyildfile", globals)
+  if len(sys.argv) > 1:
+    for target in sys.argv:
+      space.execute(target)
+  else:
+    space.execute(str(space.default))
 
 if __name__ == "__main__": main()  
 

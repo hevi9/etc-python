@@ -6,18 +6,15 @@ Run a command on web
 ==================== 
 
 WebMake
-*******
 
 Ability to run a make or other "build" commands from browser and
 get build results into page.
 
 Motivation
-==========
 
 Presentation and management of build output text.
 
 Use
-===
 
 Start local process webappserver in current build directory::
 
@@ -27,12 +24,10 @@ which open browser and runs make and redirects make stdout and stderr
 into web page text.
 
 Related
-=======
 
 CI (Continuous Integration) frameworks.
 
 Challenges
-==========
 
 ansi terminal code formatting of the output text.
 

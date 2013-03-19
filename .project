@@ -3,6 +3,7 @@
 	<name>hevi_proto</name>
 	<comment></comment>
 	<projects>
+		<project>hevi_util</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
