@@ -76,10 +76,6 @@ make comparison::
   target.txt: source1.txt source2.txt
     cat $@ > $$
 
-
-
-
-
 """
 
 ##############################################################################
@@ -90,7 +86,9 @@ log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 ################################################################(##############
-## 
+## execution dependency model
+
+class CycleError(Exception): pass 
 
 class Space:
   
@@ -99,13 +97,7 @@ class Space:
     
   def target(self,value):
     return self._targets.setdefault(value, Target(value))
-
-  def add_task(self,value,func):
-    log.debug("add_task({}, {})".format(value,func))
-    target = self.target(value)
-    target.depend(Depend(func))
-    return target
-
+  
   def execute(self, target):
     if isinstance(target, str):
       target = self._targets[target]
@@ -114,32 +106,39 @@ class Space:
         self.execute(depend.source)
     for depend in target.depends:
       depend.func()
+          
+  def has_cycle(self, depend):
+    # trivial
+    if depend.target == depend.source:
+      return True
+    return False
       
-
 space = Space()
 
 class Target:
   
-  def __init__(self, value):
+  def __init__(self, value, space=space):
     self._value = value
-    self._depends = list()
+    self._space = space
+    self._depends = list() # Depend
     
   @property
   def depends(self):
     return self._depends
-    
-  def depend(self, depend):
-    if not isinstance(depend, Target):
-      depend = space.target(depend)
+
+  def add_depend(self,depend):
+    if space.has_cycle(depend):
+      raise CycleError("Dependency cycle from {} to {}".format(
+        depend.target,depend.source))
     self._depends.append(depend)
-    depend.target = self
   
 class Depend:
   
-  def __init__(self, func):
+  def __init__(self, func, target, source=None):
     self._func = func
-    self._target = None
-    self._source = None
+    self._target = target
+    self._source = source
+    self._doc = func.__doc__
     
   @property
   def target(self):
@@ -153,36 +152,33 @@ class Depend:
   def func(self):
     return self._func
   
-  @target.setter
-  def target(self, value):
-    assert isinstance(value, Target)
-    self._target = value
-
-def task(func):
-  space.add_task(func.__name__, func)
-  return func
+##############################################################################
+## decorator
 
 def task(arg1):
   if callable(arg1): # as @task
     log.debug("task({})".format(arg1))
-    space.add_task(arg1.__name__, arg1)
+    func = arg1
+    target = space.target(func.__name__)
+    target.add_depend(Depend(func,target))
     return arg1
   else: # as task(args ..)
     log.debug("task({})".format(arg1))
     def warp(func):
       log.debug("task.wrap({})".format(func))
-      target = space.add_task(func.__name__, func)
-      target.depend(arg1)
+      target = space.target(func.__name__)
+      source = space.target(arg1)
+      target.add_depend(Depend(func,target,source))
       return func
     return warp
 
-  
 ##############################################################################
 ## entry
 
 logging.basicConfig(level=logging.DEBUG)
 
-@task
+
+@task("pre1")
 def setup():
   print("setup A")
 
@@ -194,9 +190,13 @@ def clean():
 def clean():
   print("clean B")
 
-@task
+@task("clean")
 def clean():
   print("clean C")
+
+@task
+def pre1():
+  print("pre1")
 
 
 def main():
