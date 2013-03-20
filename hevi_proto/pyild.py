@@ -116,6 +116,7 @@ class Space:
       if depend.source is not None:
         self.execute(depend.source)
     for depend in target.depends:
+      log.info("--- {} ---".format(depend.target.value))
       depend.func()
           
   def has_cycle(self, depend):

@@ -9,8 +9,6 @@ from etc.util import *
 
 docs = list()
 
-log.debug("HERE")
-
 for f in sys.argv[1:]:
   m = import_file(f)
   #log.debug(m)
