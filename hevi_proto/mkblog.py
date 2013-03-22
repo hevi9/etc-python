@@ -13,6 +13,7 @@ import fnmatch # http://docs.python.org/3/library/fnmatch
 import logging # # http://docs.python.org/3/library/os
 from docutils.parsers.rst import Parser
 from docutils.utils import new_document
+from docutils.nodes import field_list
 from docutils import frontend
 log = logging.getLogger(__name__)
 
@@ -38,6 +39,7 @@ def collect():
       for match in cfg.include:
         if fnmatch.fnmatch(file, match):
           rfiles.append(os.path.join(top,file))
+  log.debug("{} files".format(len(rfiles)))
   return rfiles
 
 def parse(files):
@@ -56,14 +58,18 @@ def parse(files):
     documents.append(document)
   return documents
 
-def publish(arg):
-  pass
+def manage(documents):
+  #log.debug(documents[0])
+  for d in documents:
+    for node in d.traverse():
+      if isinstance(node, field_list):
+        log.debug(node)
 
 def main():
   logging.basicConfig(level=logging.DEBUG)
   log.info("cfg.root={}".format(cfg.root))
   
   #publish(format(collect()))
-  log.debug(parse(collect()))
+  manage(parse(collect()))
 
 if __name__ == "__main__": main()
