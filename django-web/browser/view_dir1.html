@@ -1,0 +1,29 @@
+{% extends "browser/view_file1.html" %}
+{% block title %} Test View 1 {%endblock%}
+
+{% block content %}
+Dir {{file.root}}/{{file.relpath}} {{ file.content|length }}
+
+<table width="99%">
+
+<tr>
+<td width="1%">Name</td>
+<td>Size</td>
+<td>Time</td>
+<td>Type</td>
+</tr>
+
+{% for afile in file.content|dictsort:"name" %}
+
+<tr>
+<td><a href="{{afile.relpath}}">{{afile.name}}</a></td>
+<td>{{afile.size}}</td>
+<td>{{afile.mtime}}</td>
+<td>{{afile.ftype_str}}</td>
+</tr>
+
+{% endfor %}
+<table>
+
+{% endblock %}
+

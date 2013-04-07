@@ -1,0 +1,11 @@
+{% extends "webtest/view_file1.html" %}
+{% block title %} Test View 1 {%endblock%}
+
+{% block content %}
+{{file.root}}/{{file.relpath}} {{ file.content|length }}
+
+
+{% endblock %}
+
+
+

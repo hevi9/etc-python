@@ -1,0 +1,58 @@
+{% extends "stats/view_frame.html" %}
+{% load stats_tags %}
+
+{% block title %} Test View 1 {%endblock%}
+
+{% block content %}
+<p>Root {{tree.root}}</p>
+<p>Files: {{stats.files_nro}}
+<p>Files total size: {{stats.files_size_sum|mib}}
+<p>Files avg size: {{stats.files_size_avg|kib}}
+</p>
+
+<p>Newest files:</p>
+<table width="99%">
+<tr>
+<td width="1%">Time</td>
+<td>Name</td>
+</tr>
+{% for afile in stats.newest_files %}
+<tr>
+<td>{{afile.mtime|date:"Y-m-d-H:s" }}</td>
+<td>{{afile.rpath}}</td>
+</tr>
+{% endfor %}
+<table>
+
+<p>Oldest files:</p>
+<table width="99%">
+<tr>
+<td width="1%">Time</td>
+<td>Name</td>
+</tr>
+{% for afile in stats.oldest_files %}
+<tr>
+<td>{{afile.mtime|date:"Y-m-d-H:s" }}</td>
+<td>{{afile.rpath}}</td>
+</tr>
+{% endfor %}
+<table>
+
+<p>Biggest files:</p>
+<table width="99%">
+<tr>
+<td width="1%">Size</td>
+<td>Name</td>
+<td>Time</td>
+</tr>
+{% for afile in stats.biggest_files %}
+<tr>
+<td align="right">{{afile.size|mib}}</td>
+<td>{{afile.rpath}}</td>
+<td>{{afile.mtime|date:"Y-m-d-H:s" }}</td>
+</tr>
+{% endfor %}
+<table>
+
+
+{% endblock %}
