@@ -4,6 +4,7 @@ http://svn.plone.org/svn/collective/collective.checkdocs/trunk/collective/checkd
 
 from docutils.core import publish_parts
 
+
 def rst2html(value):
     """ Run rst2html translation """
     docutils_settings = {}
