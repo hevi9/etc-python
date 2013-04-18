@@ -17,6 +17,7 @@ from docutils.nodes import field_list
 from docutils import frontend
 log = logging.getLogger(__name__)
 
+
 class cfg:
   root = os.getcwd()
   include = [ "*.rst" ]

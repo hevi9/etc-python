@@ -11,6 +11,12 @@ Usage::
  
 Gathers all *.rst files under $home directory and
 composes $home/public_html/notes.html file.
+
+==> don't work, sphinx rst files cause too much harm,
+and sphinx is own different composing system with
+overlapping functionalities which are hard to get in sync
+with this one. 
+
 """
 
 import logging
@@ -20,6 +26,9 @@ import os
 import fnmatch
 j = os.path.join
 from docutils.core import publish_parts
+#import sphinx.directives.code
+#import sphinx.directives.other
+#import sphinx.roles
 
 home = os.environ["HOME"]
 counter = 0
