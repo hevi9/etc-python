@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 # rest reader from pelican , rstdirectives also included 
 
-from __future__ import unicode_literals, print_function
-
-import docutils
 import docutils.core
 import docutils.io
 from docutils.writers.html4css1 import HTMLTranslator
@@ -13,30 +10,12 @@ from pygments.formatters import HtmlFormatter
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name, TextLexer
 import re
+import datetime
+import logging
+log = logging.getLogger(__name__)
+import os
 
-
-class _FieldBodyTranslator(HTMLTranslator):
-
-  def __init__(self, document):
-      HTMLTranslator.__init__(self, document)
-      self.compact_p = None
-
-  def astext(self):
-      return ''.join(self.body)
-
-  def visit_field_body(self, node):
-      pass
-
-  def depart_field_body(self, node):
-      pass
-
-def render_node_to_html(document, node):
-    visitor = _FieldBodyTranslator(document)
-    node.walkabout(visitor)
-    return visitor.astext()
-
-
-class PelicanHTMLTranslator(HTMLTranslator):
+class _Translator(HTMLTranslator):
 
     def visit_abbreviation(self, node):
         attrs = {}
@@ -47,49 +26,64 @@ class PelicanHTMLTranslator(HTMLTranslator):
     def depart_abbreviation(self, node):
         self.body.append('</abbr>')
 
+def _field_date(name,value):
+  return datetime.datetime.strptime(value,"%Y-%m-%d")
 
-def _parse_metadata(self, document):
-    """Return the dict containing document metadata"""
-    output = {}
-    for docinfo in document.traverse(docutils.nodes.docinfo):
-        for element in docinfo.children:
-            if element.tagname == 'field':  # custom fields (e.g. summary)
-                name_elem, body_elem = element.children
-                name = name_elem.astext()
-                if name == 'summary':
-                    value = render_node_to_html(document, body_elem)
-                else:
-                    value = body_elem.astext()
-            else:  # standard fields (e.g. address)
-                name = element.tagname
-                value = element.astext()
-            name = name.lower()
+def _field_tags(name,value):
+  return set(value.strip().split())
 
-            output[name] = self.process_metadata(name, value)
-    return output
+def _field_default(name,value):
+  log.debug("Unknown field {}".format(name))
+  return value
 
-def _get_publisher(self, source_path):
-    extra_params = {'initial_header_level': '2',
-                    'syntax_highlight': 'short'}
-    pub = docutils.core.Publisher(
-        destination_class=docutils.io.StringOutput)
-    pub.set_components('standalone', 'restructuredtext', 'html')
-    pub.writer.translator_class = PelicanHTMLTranslator
-    pub.process_programmatic_settings(None, extra_params, None)
-    pub.set_source(source_path=source_path)
-    pub.publish()
-    return pub
+def _get_docinfo(document):
+  """Return the dict containing document metadata"""
+  output = {}
+  for docinfo in document.traverse(docutils.nodes.docinfo):
+    for element in docinfo.children:
+      if element.tagname == 'field':  # custom fields (e.g. summary)
+        name_elem, body_elem = element.children
+        name = name_elem.astext()
+        value = body_elem.astext()
+      else:  # standard fields (e.g. address)
+        name = element.tagname
+        value = element.astext()
+      name = name.lower()
+      value = globals().get("_field_" + name,_field_default)(name,value)
+      output[name] = value 
+  return output
 
-def read(self, source_path):
-    """Parses restructured text"""
-    pub = self._get_publisher(source_path)
-    parts = pub.writer.parts
-    content = parts.get('body')
+def _get_publisher(source_path):
+  extra_params = {'initial_header_level': '2',
+                  'syntax_highlight': 'short'}
+  pub = docutils.core.Publisher(destination_class=docutils.io.StringOutput)
+  pub.set_components('standalone', 'restructuredtext', 'html')
+  pub.writer.translator_class = _Translator
+  pub.process_programmatic_settings(None, extra_params, None)
+  pub.set_source(source_path=source_path)
+  pub.publish()
+  return pub
 
-    metadata = self._parse_metadata(pub.document)
-    metadata.setdefault('title', parts.get('title'))
+def path_to_title(path):
+  return os.path.basename(os.path.splitext(path)[0]) \
+           .replace("-"," ").replace("_"," ").capitalize()
 
-    return content, metadata
+def read(source_path):
+  """ Get data from rest file.
+  Returns content as str, info as dict.
+  """
+  pub = _get_publisher(source_path)
+  parts = pub.writer.parts
+  content = parts.get('body')
+  info = _get_docinfo(pub.document)
+  ## fix missing required fields
+  info.setdefault("title", parts.get('title'))
+  if info["title"].strip() == "":
+    info["title"] = path_to_title(source_path)
+  info.setdefault("date", datetime.datetime.fromtimestamp(
+    os.path.getmtime(source_path)))
+  info.setdefault("tags", set())
+  return content, info
 
 INLINESTYLES = False
 DEFAULT = HtmlFormatter(noclasses=INLINESTYLES)
@@ -119,9 +113,7 @@ class Pygments(Directive):
         parsed = highlight('\n'.join(self.content), lexer, formatter)
         return [nodes.raw('', parsed, format='html')]
 
-directives.register_directive('code-block', Pygments)
-directives.register_directive('sourcecode', Pygments)
-
+directives.register_directive('code', Pygments)
 
 class YouTube(Directive):
     """ Embed YouTube video in posts.
@@ -197,3 +189,6 @@ def abbr_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
     return [abbreviation(abbr, abbr, explanation=expl)], []
 
 roles.register_local_role('abbr', abbr_role)
+
+if __name__ == "__main__":
+  print(read("/home/hevi/wrk/blog/creating-static-blog-generator.rst"))

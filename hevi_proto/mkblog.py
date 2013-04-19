@@ -15,9 +15,10 @@ j = os.path.join
 import fnmatch # http://docs.python.org/3/library/fnmatch
 import logging # # http://docs.python.org/3/library/os
 log = logging.getLogger(__name__)
-from docutils.core import publish_parts
 from hevi_util.files import mkdir 
 import jinja2
+from hevi_proto.reader_rest import read
+from pygments.formatters import HtmlFormatter
 
 ##############################################################################
 ## Module control
@@ -50,45 +51,55 @@ pages["base.html"] = """
 <style>
 body {
   font-family: arial, sans-serif;
+  background: #EEE;
 }
-#nav ul {
-  margin: 0;
-  padding: 0;
-  float: left;
-  width: 100%;
-  list-style-type: none;
+div.documentwrapper {
+    width: 80%;
+    margin: auto;
 }
-#nav li {
-  /* border: 0px solid #000; */
-  /* display: inline; */
-  appearance: button;
-  -moz-appearance: button;
-  padding: 2;
-  float: left;
-  margin: 2;
-}
-#nav a {
-  text-decoration: none;
-  color: black;
-}
-h1 {
-  font-size: 13pt;
-  margin: 0;
-  padding: 0;
-}
-table {
-  margin: 0;
-  padding: 0;
+div.article {
+  background: #FFF;
+  padding: 5px;
+  padding-top: 3px;
+  margin: 10px;
+  border-style:solid;
+  border-width:1px;
 }
 
+h1 {
+  margin-top: 0px;
+  margin-bottom: 1pt;
+  padding: 0px;
+}
+h1 a {
+  text-decoration:none;
+  color: #000;
+}
+
+div.date {
+  color: green;
+  /* display: inline; */
+  position: fixed;
+  left: 0pt;
+  top: 0pt;
+}
+
+.tags {
+  float: right;
+  clear: both;
+}
+
+{{ page.csspygments }}
 </style>
 
 </head>
 <body>
 
+<div class="documentwrapper">
 {% block content %}
 <p>NO CONTENT</p>
 {% endblock %}
+</div> 
 
 </body>
 </html>
@@ -99,8 +110,34 @@ pages["index.html"] = """
 {% extends "base.html" %}
 {% block content %}
 {% for article in articles %}
-{{ article.body }}
+<div class="article">
+<h1><a href="{{article.rurl}}">{{article.title}}</a></h1>
+<div class="date">{{ article.date }}</div>
+<div class="tags">
+{% for tag in article.tags %}
+<a href="{{tag}}.html">{{tag}}</a>
 {% endfor %}
+</div>
+{{ article.body }}
+</div>
+{% endfor %}
+{% endblock %}
+"""
+
+## index page
+pages["page.html"] = """
+{% extends "base.html" %}
+{% block content %}
+<div class="article">
+<h1><a href="{{article.rurl}}">{{article.title}}</a></h1>
+<div class="date">{{ article.date }}</div>
+<div class="tags">
+{% for tag in article.tags %}
+<a href="{{tag}}.html">{{tag}}</a>
+{% endfor %}
+</div>
+{{ article.body }}
+</div>
 {% endblock %}
 """
 
@@ -149,23 +186,19 @@ class Article:
   body = None
   title = None
   date = None
-  tags = list()
+  tags = None
   file = None
+  rurl = None # reltive url
 
-def load_article(file):
+def make_article(file):
   step("Loading {}".format(file))
   article = Article()
   article.file = file
-  docutils_settings = {}
-  with open(file) as fd:
-    text = fd.read()
-  parts = publish_parts(
-          source=text,
-          source_path=file,
-          writer_name="html4css1",
-          settings_overrides=docutils_settings)
-  article.body = parts["body"]
-  print(type(parts["docinfo"])) 
+  article.rurl = os.path.splitext(os.path.basename(file))[0] + ".html"
+  article.body, info = read(file)
+  article.title = info["title"]
+  article.date = info["date"]
+  article.tags = info["tags"]
   return article
 
 ##############################################################################
@@ -175,11 +208,28 @@ def generate(articles):
   ofile = j(control["outdir"],"index.html")
   step("Generating {}".format(ofile))
   tmpl = jinja.get_template("index.html")
-  page = {"title": control["name"]}
+  page = {
+    "title": control["name"],
+    "csspygments": HtmlFormatter().get_style_defs('.highlight')
+  }
+  ##
   mkdir(os.path.dirname(ofile))
   with open(ofile,"w") as fd:
     fd.write(tmpl.render({"page": page, "articles": articles}))
-  
+  ## per page
+  for article in articles:
+    ofile = j(control["outdir"],article.rurl)
+    step("Generating {}".format(ofile))
+    tmpl = jinja.get_template("page.html")
+    page = {
+      "title": article.title,
+      "csspygments": HtmlFormatter().get_style_defs('.highlight')
+    }
+    mkdir(os.path.dirname(ofile))
+    with open(ofile,"w") as fd:
+      fd.write(tmpl.render({"page": page, "article": article}))
+
+    
 
 ##############################################################################
 ## Running the program
@@ -189,7 +239,8 @@ def main():
   step("Composing blog '{name}' to {outdir}".format(**control))
   articles = list()
   for file in collect():
-    articles.append(load_article(file))
+    articles.append(make_article(file))
+  articles.sort(key=lambda a: a.date,reverse=True)
   generate(articles)
   step_result("done")
 
