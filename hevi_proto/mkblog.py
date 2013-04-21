@@ -51,11 +51,12 @@ pages["base.html"] = """
 <style>
 body {
   font-family: arial, sans-serif;
-  background: #EEE;
+  background: #000;
 }
 div.documentwrapper {
     width: 80%;
-    margin: auto;
+    /* margin: auto; */
+    margin-right: auto;
 }
 div.article {
   background: #FFF;
@@ -63,12 +64,34 @@ div.article {
   padding-top: 3px;
   margin: 10px;
   border-style:solid;
-  border-width:1px;
+  border-color: #888;
+  border-width: 3px;
+  border-radius: 10px;
+  min-width: 300pt;
 }
+
+div.index {
+  position: absolute:
+  top: 0px;
+  float: right;
+}
+
+div.pointer {
+  background: #FFF;
+  padding: 5px;
+  padding-top: 3px;
+  margin: 10px;
+  border-style:solid;
+  border-color: #888;
+  border-width: 3px;
+  border-radius: 10px;
+  min-width: 300pt;
+}
+
 
 h1 {
   margin-top: 0px;
-  margin-bottom: 1pt;
+  margin-bottom: 2pt;
   padding: 0px;
 }
 h1 a {
@@ -79,9 +102,10 @@ h1 a {
 div.date {
   color: green;
   /* display: inline; */
-  position: fixed;
+  /* position: fixed;
   left: 0pt;
   top: 0pt;
+  */
 }
 
 .tags {
@@ -100,6 +124,12 @@ div.date {
 <p>NO CONTENT</p>
 {% endblock %}
 </div> 
+
+<div class="index">
+<div class="pointer">
+INDEX
+</div>
+</div>
 
 </body>
 </html>
