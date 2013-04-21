@@ -69,6 +69,13 @@ div.index {
   margin: 0px;
 }
 
+.bat {
+  font-family: arial, sans-serif;
+  color: #FFF;
+  font-size: 500%;
+  /* background: #888; */
+}
+
 div.article {
   background: #FFF;
   padding: 5px;
@@ -134,6 +141,9 @@ div.date {
 <div class="pointer">
 <p>INDEX</p>
 </div>
+<div class="bat">&#9736;</div>
+
+
 </div>
 
 </body>
