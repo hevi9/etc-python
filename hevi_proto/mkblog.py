@@ -56,8 +56,19 @@ body {
 div.documentwrapper {
     width: 80%;
     /* margin: auto; */
-    margin-right: auto;
+    /* margin-right: auto; */
+    float: left;
+    margin: 0px;
 }
+
+div.index {
+  /* position: absolute:
+  top: 0px; */
+  width: 20%;
+  float: right;
+  margin: 0px;
+}
+
 div.article {
   background: #FFF;
   padding: 5px;
@@ -70,22 +81,16 @@ div.article {
   min-width: 300pt;
 }
 
-div.index {
-  position: absolute:
-  top: 0px;
-  float: right;
-}
-
 div.pointer {
   background: #FFF;
   padding: 5px;
   padding-top: 3px;
   margin: 10px;
+  margin-left: 0px;
   border-style:solid;
   border-color: #888;
   border-width: 3px;
   border-radius: 10px;
-  min-width: 300pt;
 }
 
 
@@ -127,7 +132,7 @@ div.date {
 
 <div class="index">
 <div class="pointer">
-INDEX
+<p>INDEX</p>
 </div>
 </div>
 
