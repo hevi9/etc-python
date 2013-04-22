@@ -15,10 +15,12 @@ j = os.path.join
 import fnmatch # http://docs.python.org/3/library/fnmatch
 import logging # # http://docs.python.org/3/library/os
 log = logging.getLogger(__name__)
-from hevi_util.files import mkdir 
+from hevi_util.files import mkdir, find_tree_match
 import jinja2
 from hevi_proto.reader_rest import read
 from pygments.formatters import HtmlFormatter
+import shutil
+import zlib
 
 ##############################################################################
 ## Module control
@@ -42,6 +44,20 @@ pages = dict()
 ## jinja2 environment
 jinja = jinja2.Environment(loader=jinja2.DictLoader(pages))
 
+## pipe object type
+def color(text: str):
+  return zlib.crc32(text.encode()) % 360
+
+jinja.filters["color"] = color
+
+## pipe object type
+def date(date):
+  return date.strftime("%Y-%m")
+
+jinja.filters["date"] = date
+
+
+
 ## base page layout
 pages["base.html"] = """
 <html>
@@ -54,19 +70,16 @@ body {
   background: #000;
 }
 div.documentwrapper {
-    width: 80%;
-    /* margin: auto; */
-    /* margin-right: auto; */
-    float: left;
-    margin: 0px;
+  width: 80%;
+  float: left;
+  margin: 0pt;
 }
 
 div.index {
-  /* position: absolute:
-  top: 0px; */
   width: 20%;
   float: right;
-  margin: 0px;
+  margin: 0pt;
+  margin-top: 10pt;
 }
 
 .bat {
@@ -78,54 +91,96 @@ div.index {
 
 div.article {
   background: #FFF;
-  padding: 5px;
-  padding-top: 3px;
-  margin: 10px;
+  padding: 5pt;
+  padding-top: 3pt;
+  margin: 10pt;
   border-style:solid;
   border-color: #888;
-  border-width: 3px;
-  border-radius: 10px;
+  border-width: 3pt;
+  border-radius: 5pt;
   min-width: 300pt;
 }
 
-div.pointer {
+.logo {
+  display: block;
+  width: 80%;
   background: #FFF;
-  padding: 5px;
-  padding-top: 3px;
-  margin: 10px;
-  margin-left: 0px;
+  padding: 5pt;
   border-style:solid;
   border-color: #888;
-  border-width: 3px;
-  border-radius: 10px;
+  border-width: 3pt;
+  border-radius: 5pt;
+  text-align: center;
+  color: #000;
+  text-decoration: none;
+  font-family: Impact, Charcoal, sans-serif;
+  font-size: 200%;
+  font-weight: bold;
+  margin-bottom: 10pt;
 }
 
 
 h1 {
-  margin-top: 0px;
+  margin-top: 0pt;
   margin-bottom: 2pt;
-  padding: 0px;
+  padding: 0pt;
 }
 h1 a {
   text-decoration:none;
   color: #000;
 }
 
+.info {
+  /* float: right; */
+  margin-top: 5pt;
+  text-align: right;
+}
+
 div.date {
-  color: green;
-  /* display: inline; */
-  /* position: fixed;
-  left: 0pt;
-  top: 0pt;
-  */
+  display: inline;
 }
 
 .tags {
-  float: right;
-  clear: both;
+  display: inline;
+}
+
+.tag {
+  background: hsla(120,30%,60%,1);  
+  padding-left: 5pt;
+  padding-right: 5pt;
+  border-style:solid;
+  border-color: #888;
+  border-width: 2pt;
+  border-radius: 5pt;  
+  text-align: center;
+  color: #000;
+  text-decoration: none;  
+}
+
+.tag-space-ul {
+  list-style-type: none;
+  padding: 0pt;
+  margin: 0pt;
+}
+
+.tag-space {
+  display: inline-block;
+  margin-bottom: 7pt;
 }
 
 {{ page.csspygments }}
+
+
+.highlight, .literal-block {
+  background: #EEE;  
+  padding-left: 5pt;
+  padding-right: 5pt;
+  border-style:solid;
+  border-color: #888;
+  border-width: 2pt;
+  border-radius: 5pt;
+}
+
 </style>
 
 </head>
@@ -138,11 +193,16 @@ div.date {
 </div> 
 
 <div class="index">
-<div class="pointer">
-<p>INDEX</p>
-</div>
-<div class="bat">&#9736;</div>
 
+<a class="logo" href="index.html">{{ page.logo }}</a>
+
+<ul class="tag-space-ul">
+{% for tag in page.tags %}
+<li class="tag-space">
+<a class="tag" style="background:hsla({{tag|color}},30%,60%,1);" href="{{tag}}.html">{{tag}}</a>
+</li>
+{% endfor %}
+</ul>
 
 </div>
 
@@ -154,18 +214,25 @@ div.date {
 pages["index.html"] = """
 {% extends "base.html" %}
 {% block content %}
+
 {% for article in articles %}
 <div class="article">
+
 <h1><a href="{{article.rurl}}">{{article.title}}</a></h1>
-<div class="date">{{ article.date }}</div>
+{{ article.body }}
+
+<div class="info">
 <div class="tags">
 {% for tag in article.tags %}
-<a href="{{tag}}.html">{{tag}}</a>
+<a class="tag" style="background:hsla({{tag|color}},30%,60%,1);" href="{{tag}}.html">{{tag}}</a>
 {% endfor %}
 </div>
-{{ article.body }}
+<div class="date">{{ article.date | date }}</div>
+</div>
+
 </div>
 {% endfor %}
+
 {% endblock %}
 """
 
@@ -198,6 +265,9 @@ def step(txt):
   
 def step_result(txt):
   print("=>",txt)
+
+def error(txt):
+  print("??",txt)
 
 ##############################################################################
 ## gathering files
@@ -235,26 +305,32 @@ class Article:
   file = None
   rurl = None # reltive url
 
-def make_article(file):
+def make_article(file,manager):
   step("Loading {}".format(file))
   article = Article()
   article.file = file
   article.rurl = os.path.splitext(os.path.basename(file))[0] + ".html"
-  article.body, info = read(file)
+  article.body, info = read(file, manager)
   article.title = info["title"]
   article.date = info["date"]
+  manager.add_tag(date(article.date))
   article.tags = info["tags"]
+  article.tags.add(date(article.date))
+  for tag in article.tags:
+    manager.add_tag(tag)
   return article
 
 ##############################################################################
 ## Generate
 
-def generate(articles):
+def generate(articles, manager):
   ofile = j(control["outdir"],"index.html")
   step("Generating {}".format(ofile))
   tmpl = jinja.get_template("index.html")
   page = {
     "title": control["name"],
+    "logo": control["name"],
+    "tags": sorted(manager.tags),
     "csspygments": HtmlFormatter().get_style_defs('.highlight')
   }
   ##
@@ -268,13 +344,50 @@ def generate(articles):
     tmpl = jinja.get_template("page.html")
     page = {
       "title": article.title,
+      "logo": control["name"],
+      "tags": manager.tags,
       "csspygments": HtmlFormatter().get_style_defs('.highlight')
     }
     mkdir(os.path.dirname(ofile))
     with open(ofile,"w") as fd:
       fd.write(tmpl.render({"page": page, "article": article}))
-
+  ## copy external files
+  for dst, src in manager.ext_files.items():
+    step("Copy {} => {}".format(src, j(control["outdir"],dst)))
+    shutil.copy(src, j(control["outdir"],dst))
     
+
+##############################################################################
+## 
+
+class Manager:
+  """ Manage the reources. """
+  
+  def __init__(self):
+    self._ext_files = dict() # relative url => abs path  
+    self._tags = set()
+
+  def ext_file(self, file):
+    files = find_tree_match(control["root"], file)
+    if len(file) > 0:
+      rurl = os.path.relpath(files[0], control["root"])
+      src = files[0]
+      self._ext_files[rurl] = src
+    else:
+      error("external file {} not found".format(file))
+    return rurl
+
+  def add_tag(self, tag):
+    self._tags.add(tag)
+
+  @property
+  def ext_files(self):
+    return self._ext_files
+
+  @property
+  def tags(self):
+    return self._tags
+
 
 ##############################################################################
 ## Running the program
@@ -282,11 +395,13 @@ def generate(articles):
 def main():
   logging.basicConfig(level=logging.DEBUG)
   step("Composing blog '{name}' to {outdir}".format(**control))
+  manager = Manager()
   articles = list()
   for file in collect():
-    articles.append(make_article(file))
+    articles.append(make_article(file, manager))
+  step_result("{} external files".format(len(manager.ext_files)))
   articles.sort(key=lambda a: a.date,reverse=True)
-  generate(articles)
+  generate(articles, manager)
   step_result("done")
 
 if __name__ == "__main__": main()

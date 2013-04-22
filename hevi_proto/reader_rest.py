@@ -53,6 +53,12 @@ def _get_docinfo(document):
       output[name] = value 
   return output
 
+def _get_files(document, manager):
+  result = list()
+  for image in document.traverse(docutils.nodes.image):
+    image["uri"] = manager.ext_file(image.get("uri"))
+  return result
+
 def _get_publisher(source_path):
   extra_params = {'initial_header_level': '2',
                   'syntax_highlight': 'short'}
@@ -68,7 +74,7 @@ def path_to_title(path):
   return os.path.basename(os.path.splitext(path)[0]) \
            .replace("-"," ").replace("_"," ").capitalize()
 
-def read(source_path):
+def read(source_path, manager):
   """ Get data from rest file.
   Returns content as str, info as dict.
   """
@@ -83,6 +89,9 @@ def read(source_path):
   info.setdefault("date", datetime.datetime.fromtimestamp(
     os.path.getmtime(source_path)))
   info.setdefault("tags", set())
+  ##
+  _get_files(pub.document, manager)
+  ##
   return content, info
 
 INLINESTYLES = False
