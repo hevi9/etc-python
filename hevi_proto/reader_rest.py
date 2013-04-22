@@ -56,12 +56,15 @@ def _get_docinfo(document):
 def _get_files(document, manager):
   result = list()
   for image in document.traverse(docutils.nodes.image):
-    image["uri"] = manager.ext_file(image.get("uri"))
+    log.debug(image)
+    #image["uri"] = manager.ext_file(image.get("uri"))
+    manager.ext_file(image.get("uri"))
   return result
 
 def _get_publisher(source_path):
   extra_params = {'initial_header_level': '2',
-                  'syntax_highlight': 'short'}
+                  'syntax_highlight': 'short',
+                  "output_encoding": 'utf-8'}
   pub = docutils.core.Publisher(destination_class=docutils.io.StringOutput)
   pub.set_components('standalone', 'restructuredtext', 'html')
   pub.writer.translator_class = _Translator

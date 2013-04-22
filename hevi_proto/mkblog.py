@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+## -*- coding: utf-8 -*-
+## Copyright (C) 2013 Petri Heinilä, License LGPL 2.1
+
 """
 Blog composer and publisher
 ===========================
@@ -31,7 +35,8 @@ control = {
   "name": os.path.basename(os.getcwd()),
   "root": os.getcwd(),
   "include": [ "*.rst" ],
-  "ignore": [ "README.rst" ]
+  "ignore": [ "README.rst", "footer.rst" ],
+  "footer": "footer.rst"
 }
 control["outdir"] = j(home,"public_html",control["name"])
 
@@ -60,7 +65,9 @@ jinja.filters["date"] = date
 
 ## base page layout
 pages["base.html"] = """
+<!DOCTYPE html>
 <html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <head>
 <title>{{ page.title }}</title>
 
@@ -181,6 +188,20 @@ div.date {
   border-radius: 5pt;
 }
 
+.footer {
+  foreground: #FFF;
+  clear: both;
+  text-align: center;
+  color: #DDD;
+  text-decoration: none;  
+  font-size: 90%;
+}
+
+.footer a {
+  color: #DDD;  
+}
+
+
 </style>
 
 </head>
@@ -206,6 +227,14 @@ div.date {
 
 </div>
 
+{% block footer %}
+{% if page.footer %}
+<div class="footer">
+{{page.footer}}
+</div>
+{% endif %}
+{% endblock %}
+
 </body>
 </html>
 """
@@ -227,7 +256,6 @@ pages["index.html"] = """
 <a class="tag" style="background:hsla({{tag|color}},30%,60%,1);" href="{{tag}}.html">{{tag}}</a>
 {% endfor %}
 </div>
-<div class="date">{{ article.date | date }}</div>
 </div>
 
 </div>
@@ -331,8 +359,9 @@ def generate(articles, manager):
     "title": control["name"],
     "logo": control["name"],
     "tags": sorted(manager.tags),
+    "footer": manager.footer,
     "csspygments": HtmlFormatter().get_style_defs('.highlight')
-  }
+  }    
   ##
   mkdir(os.path.dirname(ofile))
   with open(ofile,"w") as fd:
@@ -346,6 +375,7 @@ def generate(articles, manager):
       "title": article.title,
       "logo": control["name"],
       "tags": manager.tags,
+      "footer": manager.footer,
       "csspygments": HtmlFormatter().get_style_defs('.highlight')
     }
     mkdir(os.path.dirname(ofile))
@@ -366,6 +396,7 @@ class Manager:
   def __init__(self):
     self._ext_files = dict() # relative url => abs path  
     self._tags = set()
+    self._footer = None
 
   def ext_file(self, file):
     files = find_tree_match(control["root"], file)
@@ -380,6 +411,9 @@ class Manager:
   def add_tag(self, tag):
     self._tags.add(tag)
 
+  def set_footer(self, footer_html):
+    self._footer = footer_html
+
   @property
   def ext_files(self):
     return self._ext_files
@@ -387,6 +421,10 @@ class Manager:
   @property
   def tags(self):
     return self._tags
+
+  @property
+  def footer(self):
+    return self._footer
 
 
 ##############################################################################
@@ -401,6 +439,8 @@ def main():
     articles.append(make_article(file, manager))
   step_result("{} external files".format(len(manager.ext_files)))
   articles.sort(key=lambda a: a.date,reverse=True)
+  if control.get("footer"):
+    manager.set_footer(read(control.get("footer"), manager)[0])
   generate(articles, manager)
   step_result("done")
 
