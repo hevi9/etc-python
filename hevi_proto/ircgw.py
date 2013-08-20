@@ -56,6 +56,7 @@ class Connect(ReRe):
     self.fd = socket.socket()
     ioevents.on_reads[self.fd] = self.on_read
     ioevents.on_closes[self.fd] = self.on_close
+    ioevents.on_errors[self.fd] = self.on_error
     ioevents.on_writes[self.fd] = rere.on_write
     self.fd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     self.fd.setblocking(False)
@@ -65,7 +66,6 @@ class Connect(ReRe):
       self.fd.connect(self.addr)
     except BlockingIOError as ex:
       pass
-    D("connected")
     self.on_reply = rere.on_reply1
         
   def on_write(self,fo):
@@ -130,6 +130,9 @@ class Proto:
     
   def on_close(self,fd):
     D("on_close({})".format(fd))
+    
+  def on_error(self,fo):
+    D("on_error({})".format(fo))
   
   def on_read(self,fd):
     #D("on_read({})".format(fd))
@@ -160,9 +163,15 @@ class Proto:
 
   def on_cmd(self,cmd,rest):
     D("cmd: {}, {}".format(cmd,rest))
+    cmdfunc = "on_" + cmd
+    if hasattr(self, cmdfunc):
+      getattr(self, cmdfunc)(rest)
     
+  def on_PING(self,rest):
+    self.writeline("PONG " + rest)
 
   def writeline(self,line):
+    D("writeline({})".format(line))
     data = (line + "\r\n").encode()
     self.fd.send(data)
   
@@ -197,9 +206,11 @@ class IOEvents:
     self.on_reads = IOEvents.Event(self,select.EPOLLIN,"IN")
     self.on_writes = IOEvents.Event(self,select.EPOLLOUT,"OUT") 
     self.on_closes = IOEvents.Event(self,select.EPOLLHUP,"HUP")
-    self.xxxs = (self.on_reads, self.on_closes)
+    self.on_errors = IOEvents.Event(self,select.EPOLLERR,"ERR")
+    self.xxxs = (self.on_reads, self.on_closes, self.on_writes,self.on_errors)
   
   def dispatch(self,timeout=0):
+    cleanup = list()
     for fd, event in self.epoll.poll(timeout):
       for xxx in self.xxxs:
         if event & xxx.event:
@@ -207,7 +218,9 @@ class IOEvents:
             if fo.fileno() == fd:
               more = xxx[fo](fo)
               if not more or more < 1:
-                del xxx[fo]
+                cleanup.append((xxx,fo))
+    for xxx,fo in cleanup:
+      del xxx[fo]
 
   class Event(collections.UserDict):
     
@@ -218,7 +231,7 @@ class IOEvents:
       self.data = dict()
 
     def __setitem__(self,fo,func):
-      D("__setitem__({},{})".format(fo,func))
+      D("{}.__setitem__({},{})".format(self.name,fo,func))
       self.data[fo] = func
       bits = self.ctx.allfos.setdefault(fo,0)
       if bits == 0:
@@ -228,7 +241,7 @@ class IOEvents:
       self.ctx.allfos[fo] = bits | self.event
       
     def __delitem__(self,fo):
-      D("__delitem__({})".format(fo))
+      D("{}.__delitem__({})".format(self.name,fo))
       bits = self.ctx.allfos[fo] & ~self.event
       if bits == 0:
         self.ctx.epoll.unregister(fo)
@@ -239,31 +252,6 @@ class IOEvents:
 
       
 ioevents = IOEvents()
-
-
-#   def dispatch(self,timeout=0):
-#     #D("dispatch")
-#     #D(self.epoll.poll(timeout))
-#     for fd, event in self.epoll.poll(timeout):
-#       #D("poll: {} {}".format(fd, event))
-#       if event & select.EPOLLIN:
-#         more = self.on_reads[fd][1](self.on_reads[fd][0])
-#         if more < 1:
-#           self.read_remove(self.on_reads[fd][0])
-#       if event & self.on_hups.event:
-#         for fo in self.on_hups:
-#           if fo.fileno() == fd:
-#             self.on_hups[fo](fo)
-#   def read_add(self, fd, on_read):
-#     D("read_add({},{})".format(fd,on_read))
-#     self.on_reads[fd.fileno()] = (fd,on_read)
-#     self.epoll.register(fd,select.EPOLLIN | select.EPOLLHUP)
-#     
-#   def read_remove(self,fd):
-#     D("read_remove({},{})".format(fd))
-#     self.epoll.unregister(fd)
-#     del self.on_reads[fd.fileno()]
-
   
 ##############################################################################
 def dev():
@@ -275,7 +263,7 @@ def dev():
   ##
   while True:
     stepper.dispatch()
-    ioevents.dispatch()
+    ioevents.dispatch(0.01)
   
 
   
