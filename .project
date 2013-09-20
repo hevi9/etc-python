@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>hevi_proto</name>
+	<name>hevi-protos</name>
 	<comment></comment>
 	<projects>
 		<project>hevi_util</project>
