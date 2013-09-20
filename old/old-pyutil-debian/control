@@ -1,0 +1,35 @@
+Source: pyutil
+Section: python
+Priority: optional
+Maintainer: Petri Heinilä
+Build-Depends: debhelper (>= 4),
+ python2.3-dev,
+ python2.4-dev,
+ python-epydoc (>= 2),
+ cook
+Standards-Version: 3.6.1.0
+
+Package: python-pyutil
+Architecture: all
+Depends: python2.3-pyutil | python2.4-pyutil
+Description: Python Utilities
+
+Package: python-pyutil-doc
+Section: doc
+Architecture: all
+Depends: python2.3-pyutil | python2.4-pyutil
+Description: Documentation for python-pyutil.
+
+Package: python2.3-pyutil
+Architecture: all
+Depends: python-pyutil, python2.3
+Description: see python-pyutil
+
+Package: python2.4-pyutil
+Architecture: all
+Depends: python-pyutil, python2.4
+Description: see python-pyutil
+
+
+
+

@@ -1,0 +1,240 @@
+/* -*- C-*-
+  $Id: Howto.cook,v 1.10 2005-11-09 17:56:12 hevi Exp $
+  BUILD
+*/
+
+
+/**********************************************************************
+ targets */
+
+help:: /* show targets */
+{
+	[print "Targets:"];
+	[print "  all|build -- build all"];
+	[print "  help -- this help [default]"];
+	[print "  info -- show configuration information"];
+	[print "  clean -- remove generated files"];
+	[print "  check  -- run tests"];
+	[print "  coverage -- run tests and print test coverage"];
+	[print "  prepare -- prepare dev things, should be run first"];
+	[print "  lint -- make checks to code"];
+  [print "  install -- install all to prefix"];
+	[print "  install-doc -- generate documentation"];
+  [print "  show-doc -- show documentation"];
+}
+
+all:: build;
+
+/**********************************************************************
+ information, configuration */
+
+prj.name = pyutil;               /* project name */
+prj.version = [collect cat VERSION]; /* version */
+prj.deb.pkgs = python-pyutil python-pyutil-doc python2.3-pyutil python2.4-pyutil;
+
+/* prefix */
+if [not [defined "prefix"]] then {
+	prefix=/tmp/[getenv USER]/[prj.name];
+}
+
+if [not [defined "prefix.doc"]] then {
+  prefix.doc = [prefix]/share/doc/[prj.name];
+}
+
+if [not [defined "prefix.man"]] then {
+  prefix.man = [prefix]/share/man;
+}
+
+info:: /* show info */
+{
+  [print " = prj.name="[prj.name]];
+	[print " = prj.version="[prj.version]];
+	[print " = prefix="[prefix]];
+  [print " = prefix.doc="[prefix.doc]];
+}
+
+/**********************************************************************
+ used programs */
+
+prg.find = find;
+prg.chmod = chmod;
+prg.coverage = tools/coverage.py;
+prg.pwd = pwd;
+prg.epydoc = epydoc;
+prg.touch = touch;
+prg.python = python;
+prg.rm = rm -f;
+prg.mkdir = mkdir -p;
+prg.browser = firefox;
+
+/*transition, remove these 
+find = [prg.find];
+rm = [prg.rm];
+chmod = [prg.chmod];
+*/
+
+/**********************************************************************
+ environment */
+
+pwd = [collect [prg.pwd]];
+
+setenv PYTHONPATH = [getenv PYTHONPATH]":"[pwd]/lib;
+
+/**********************************************************************
+ manifest */
+
+manifest = [sort [fromto ./%0% %0%
+                  [collect [prg.find] . ! -type d -print]
+            ]];
+
+manifest = [filter_out %0%,v
+            [filter_out %0%/CVS
+             [manifest]]];
+
+info::
+{
+	[print " * "[count [manifest]]" files in manifest"];
+}
+
+/**********************************************************************
+ coverage */
+
+target_files = [match_mask lib/%0%.py [manifest]];
+
+test_files = [match_mask %0test_%.py [manifest]];
+
+test_all_files = [target_files] [test_files];
+
+check: [test_all_files] Howto.cook
+{
+	[prg.coverage] -x tools/runtests.py [test_files];
+}
+
+coverage: check
+{
+	[prg.coverage] -r [target_files];
+}
+
+/**********************************************************************
+ lint */
+
+prg.pylint = pylint;
+prg.pylint.cfg =
+'--reports=n'
+'--disable-all'
+'--enable-classes=y'
+'--enable-basic=n'
+'--enable-miscellaneous=y'
+'--enable-imports=y'
+'--enable-format=n'
+'--indent-string="  "'
+;
+lint:
+{
+	[prg.pylint] [prg.pylint.cfg] [target_files];
+}
+
+/**********************************************************************
+ clean */
+
+clean_globs = 
+*~
+*.log
+*.aux
+*.toc
+*.lof
+*.dvi
+*.bak
+*.pyc
+out.ps
+Howto.list
+semantic.cache
+.coverage
+.build-stamp
+.configure-stamp
+.doc_timestamp
+.install-doc-stamp
+;
+
+clean::
+{
+  [prg.find] . 
+   '\\('
+   [unsplit ' -o ' [prepost '-name \"' '\"' [clean_globs]]]
+   '\\)'
+   -exec [prg.rm] -f '{}' '\\;'
+    ;
+}
+
+/**********************************************************************
+ prepare things */
+ 
+prepare::
+{
+	[prg.chmod] a+rx [prg.coverage];
+}
+
+/**********************************************************************
+ epydoc documentation */
+
+doc.more = os os.path sys shutil;
+
+epydoc.stamp = .install-doc-stamp;
+
+/*
+install-doc: [epydoc.stamp];
+[epydoc.stamp]: [target_files] Howto.cook
+*/
+
+install-doc:
+set mkdir
+{
+	[prg.mkdir] [prefix.doc];
+  [prg.epydoc] 
+    --quiet 
+    --output [prefix.doc] 
+    --docformat plaintext
+    --show-imports
+  /*  --inheritance included */
+   	--name [prj.name]
+    [target_files] [doc.more];
+ /* [prg.touch] [target]; */
+}
+
+show-doc: install-doc
+{
+  [prg.browser] -remote "'openURL(file://"[prefix.doc]/index.html")'";
+}
+
+/**********************************************************************
+ debian */
+ 
+DEBIAN_REPO = /net/azog/home/pkgs/debian;
+#include-cooked "tools/debian.cook"
+
+/**********************************************************************
+ install */
+
+install-python::
+{
+	[prg.rm] -rf build;
+	[prg.mkdir] "build/tmp";
+	[prg.python] setup.py install "--prefix="[prefix];
+}
+
+clean::
+{
+	[prg.rm] -r build;
+}
+
+install:: install-doc install-python;
+
+
+
+
+
+
+ 
+
+
+

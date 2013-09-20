@@ -1,0 +1,76 @@
+#!/usr/bin/make -f
+## $Id: rules,v 1.4 2004/07/01 12:03:36 hevi Exp $
+## DEBIAN RULES
+
+#export DH_VERBOSE=1
+PY_BUILD_FLAGS += --debug
+
+## packages
+pm  := python-pyutil
+pd  := python-pyutil-doc
+p23 := python2.3-pyutil
+p24 := python2.4-pyutil
+
+######################################################################
+
+clean-pre:
+	dh_testdir
+	dh_testroot
+
+build-pre:
+	dh_testdir
+
+install-pre:
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_python
+	mkdir -p build/tmp
+
+install-post:
+	dh_strip
+	dh_installchangelogs
+	dh_installdocs
+	dh_installdeb
+	dh_fixperms
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+install-python-pyutil:
+	dh_installdocs -p$(pm) README.txt
+	dh_installman -p$(pm) pyutil.1
+	python ./setup.py install_scripts --install-dir="debian/$(pm)/usr/bin"
+
+install-python-pyutil-doc:
+	mkdir -p build/doc/html
+	cook install-doc prefix.doc=build/doc/html
+	dh_installdocs -p$(pd) build/doc/html
+
+install-python2.3-pyutil:
+	python2.3 ./setup.py install --prefix="debian/$(p23)/usr" --no-compile
+	rm -rf debian/$(p23)/usr/bin
+
+install-python2.4-pyutil:
+	python2.4 ./setup.py install --prefix="debian/$(p24)/usr" --no-compile
+	rm -rf debian/$(p24)/usr/bin
+
+######################################################################
+## interface
+
+clean: clean-pre
+	dh_clean
+	rm -rf build
+	
+build: build-pre
+
+binary: install
+install: install-pre install-packages install-post
+
+install-packages: install-python-pyutil install-python-pyutil-doc \
+	install-python2.3-pyutil install-python2.4-pyutil
+
+
+
+
+

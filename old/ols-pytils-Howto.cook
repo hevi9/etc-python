@@ -1,0 +1,140 @@
+/* -*- C -*-
+  $Id: Howto.cook,v 1.8 2003-07-17 18:58:45 hevi Exp $
+  
+*/
+
+/**********************************************************************
+ contents */
+
+help:
+{
+  [print "Targets:"];
+  [print "  help [default]"];
+  [print "  clean"];
+  [print "  check"];
+  [print "  report"];
+  [print "  epydoc"];
+  [print "  show-epydoc"];
+}
+
+
+/**********************************************************************
+ programs */
+
+prg.find = find;
+prg.coverage = coverage.py;
+prg.rm = rm;
+prg.epydoc = epydoc;
+prg.browser = galeon;
+prg.touch = touch;
+
+/**********************************************************************
+ manifest */
+
+manifest = [sort [fromto ./%0% %0% 
+		  [collect [prg.find] . ! -type d -print]
+	    ]];
+
+manifest = [filter_out %0%,v
+	    [filter_out %0%/CVS 
+	     [manifest]]];
+
+[print "info: "[count [manifest]]" files in manifest"];
+
+/**********************************************************************
+ dependency generation */
+
+/**********************************************************************
+ main targets */
+
+/**********************************************************************
+ execution rules */
+
+clean_globs = 
+*~
+*.log
+*.aux
+*.toc
+*.lof
+*.dvi
+*.bak
+*.pyc
+Howto.list
+.coverage
+;
+
+clean:
+{
+  [prg.find] . 
+   '\\('
+   [unsplit ' -o ' [prepost '-name \"' '\"' [clean_globs]]]
+   '\\)'
+   -exec [prg.rm] -f '{}' '\\;'
+    ;
+}
+
+/**********************************************************************
+ clean python compiled files */
+
+files.pyc = [match_mask %0%.pyc [manifest]];
+
+clean.pyc:
+{
+  [prg.rm] -f [files.pyc];
+}
+
+/**********************************************************************
+ check */
+
+check: clean.pyc
+{
+  python -tt tests/__init__.py;
+}
+
+/**********************************************************************
+ python files */
+
+files.py = [match_mask %0%.py [manifest]];
+files.impl.py = [filter_out tests/%0%.py [files.py]];
+files.impl.py = [filter_out old/%0%.py [files.impl.py]];
+files.impl.py = [filter_out spec/%0%.py [files.impl.py]];
+
+/**********************************************************************
+ coverage report */
+
+.coverage: [files.py]
+{
+  [prg.coverage] -x tests/__init__.py;
+}
+
+report: .coverage
+{
+  [prg.coverage] -r [files.impl.py];
+}
+
+/**********************************************************************
+ epydoc documentation */
+
+epydoc.output = /tmp/hevi/epydoc;
+
+epydoc.stamp = [epydoc.output]/.timestamp;
+
+epydoc: [epydoc.stamp];
+
+[epydoc.stamp]: [files.py]
+set mkdir
+{
+  [prg.epydoc] 
+    --quiet 
+    --output [epydoc.output] 
+    --docformat plaintext
+    --show-imports
+    [files.impl.py];
+  [prg.touch] [target];
+}
+
+show-epydoc: epydoc
+{
+  [prg.browser] --existing [epydoc.output]/index.html;
+}
+

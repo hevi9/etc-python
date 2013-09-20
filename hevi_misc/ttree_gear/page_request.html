@@ -1,0 +1,11 @@
+{% extends "page_base.html" %}
+{% block content %}
+
+<h2>Request</h2>
+<table>
+{% for key in environ %}
+<tr><td>{{ key }}</td><td> {{ environ[key] }} </td></tr>
+{% endfor%}
+</table>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "page_base.html" %}
+{% block content %}
+
+<h2>All Entries</h2>
+<ol>
+{% for path,entry in tree.index() | dictsort %}
+<li>{{entry.type_char()}} <a href="/{{ entry.path() }}">{{ entry.path() }}</a>
+ {% for tag in entry.tags().values() %}
+ {{ tag.name() }}
+ {% endfor %}
+ {{ entry.type_mime() }}
+</li>
+{% endfor%}
+</ol>
+
+{% endblock %}
