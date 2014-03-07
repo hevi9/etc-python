@@ -1,6 +1,9 @@
 eclipse.preferences.version=1
+encoding//hevi_proto/cmd_report.py=utf-8
 encoding//hevi_proto/file.py=utf-8
 encoding//hevi_proto/filebrowser.py=utf-8
+encoding//hevi_proto/hevi_list.py=iso-8859-15
+encoding//hevi_proto/home_web.py=utf-8
 encoding//hevi_proto/ircgw.py=utf-8
 encoding//hevi_proto/reload.py=utf-8
 encoding//hevi_proto/rstdirectives.py=utf-8
