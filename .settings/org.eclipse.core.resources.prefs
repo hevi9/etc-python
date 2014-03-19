@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding/coro_chain.py=utf-8
+encoding/echo_client.py=utf-8
+encoding/echo_server.py=utf-8
+encoding/future_run_forever.py=utf-8
+encoding/future_run_until_complete.py=utf-8
+encoding/hello.py=utf-8
+encoding/hello_coro.py=utf-8
+encoding/hello_with_signal.py=utf-8
+encoding/hello_with_signal_no_global.py=utf-8
+encoding/scrape.py=utf-8
+encoding/tasks_parallel.py=utf-8
