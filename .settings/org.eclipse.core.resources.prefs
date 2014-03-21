@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//aptx/simple.py=utf-8
 encoding//django-web/browser/system.py=utf-8
 encoding//django-web/stats/stats.py=utf-8
 encoding//django-web/stats/templatetags/stats_tags.py=utf-8
