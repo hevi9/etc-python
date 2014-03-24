@@ -2,7 +2,7 @@
 # this is to be imported/included by python, sh, make
 
 name    = "simeb"
-title   = "simeb title here"
+title   = "SImple MEssage Bus"
 version = 1
 author  = "Petri Heinilä"
 url     = "https://github.com/hevi9/simeb"
