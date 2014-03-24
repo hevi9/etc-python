@@ -1,5 +1,8 @@
-simeb -- SImple MEssage Bus example by asyncio and json message coding
-======================================================================
+simeb 
+=====
+
+-- SImple MEssage Bus example by asyncio and json message coding
+
 
 simeb broadcasts messages (as functions) along the bus between
 processes (local or remote).
@@ -22,7 +25,7 @@ Example echo_service.py::
 
 get_bus() initializes message broker and get default bus.
 
-@bus.register sets function to be invoked the "echo_message" appears on bus.
+@bus.register sets function to be invoked when the "echo_message" appears on bus.
 
 bus.echo_reply() send "echo_reply" message with parameter to the bus.
   
