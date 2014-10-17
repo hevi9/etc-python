@@ -1,0 +1,9 @@
+# Project basic information
+# this is to be imported/included by python, sh, make
+
+name    = "pysinfo"
+title   = "pysinfo title here"
+version = 1
+author  = "Petri Heinilä"
+url     = "https://github.com/hevi9/pysinfo"
+license = "LGPL 2.1"
