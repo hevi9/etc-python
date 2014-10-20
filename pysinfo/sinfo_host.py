@@ -5,6 +5,7 @@
 from .data import sinfo_apply 
 import socket
 import ipaddress
+import sys
 
 def get_ipv4():
   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -15,7 +16,9 @@ def get_ipv4():
 
 data = {
   "name": socket.gethostname(),
-  "ipv4": get_ipv4()
+  "ipv4": get_ipv4(),
+  "ostype": sys.platform
+  
 }
 
 sinfo_apply("host", data)
