@@ -16,7 +16,8 @@ def get_stats():
 nfiles = get_stats()
 
 data = {
-  "path": path
+  "path": path,
+  "nfiles": nfiles
   
 }
 
