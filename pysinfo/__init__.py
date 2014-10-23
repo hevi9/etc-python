@@ -5,4 +5,4 @@
 from . import sinfo_host
 from . import sinfo_home
 
-from .data import sinfo 
+from .data import sinfo, sinfo_update
