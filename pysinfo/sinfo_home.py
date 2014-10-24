@@ -15,27 +15,19 @@ import time
 
 path = os.environ["HOME"]
 
-def get_stats():
-  nfiles = 0
-  for dir, dirs, files in os.walk(path):
-    nfiles += len(files)
-  return nfiles  
-
-nfiles = 0
-
 data = {
   "path": path,
-  "nfiles": nfiles
+  "nfiles": -1
 }
 
 @asyncio.coroutine
 def update_coro():
   D("update_coro() enter")  
-  global nfiles
+  nfiles = 0
   for dir, dirs, files in os.walk(path):
     nfiles += len(files)
     data["nfiles"] = nfiles
-    yield from asyncio.sleep(0.00000001)
+    yield from asyncio.sleep(0)
   D("update_coro() leave")
 
 sinfo_apply("home", data, update_coro)
