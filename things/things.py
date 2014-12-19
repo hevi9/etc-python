@@ -14,6 +14,7 @@ import time
 import datetime
 import uuid as muuid
 from pymongo import MongoClient
+import fnmatch
 
 OPS = "==>"  # operation sign
 TGS = "[]"  # thing sign
@@ -50,16 +51,21 @@ def make_thing(title):
 
 ARGS = argparse.ArgumentParser()
 ARGS.add_argument("title", nargs="*",
-                  help="Positional arguments")
+                  help="""Thing title text, arguments are concatenated into same
+                  title text, extra spaces are stripped""")
 ARGS.add_argument("-d", "--debug", action="store_true",
-                  help="set debugging on")
+                  help="set Debugging/Development mode on")
 ARGS.add_argument("-r", "--remove", action="store_true",
                   help="Remove thing by title")
+ARGS.add_argument("-c", "--config", action="store_true",
+                  help="Configure, TODO")
+ARGS.add_argument("-n", "--new", action="store_true",
+                  help="create New thing")
+ARGS.add_argument("-u", "--uuid", action="store_true",
+                  help="specify thing by UUID, TODO")
+ARGS.add_argument("-s", "--show", action="store_true",
+                  help="show a thing, TODO")
 
-def setup_logging(args):
-  logging.basicConfig()
-  if args.debug:
-    logging.getLogger().setLevel(logging.DEBUG)
 
 def thing_remove(things, title):
   D("thing_remove %s '%s'", things, title)
@@ -72,6 +78,46 @@ def thing_remove(things, title):
     print(OPS,"no thing '%s' found to remove" % title)
   else: # more than 1
     print(OPS,"found %d things '%s', cannot remove" % (cursor.count(), title))
+
+
+def thing_new(things, title):
+    D("Create new thing")
+    cursor = things.find({"title": title})
+    if cursor.count() == 0:
+      print(OPS, "new thing '%s'" % title)
+      thing = make_thing(title)
+      thing.mongo_insert(things)
+    else:
+      print(OPS, "thing '%s' exists already, no thing need to be done" % title)
+
+
+def thing_list(things, match=""):     
+  match = ".*" if match == "" else "^.*" + match + ".*$"
+  D("Listing things for match '%s'", match) 
+  for data in things.find({"title": {"$regex": match}}):
+    thing = Thing()
+    thing.update(data)
+    print("[]",thing.title)  
+
+
+def thing_show(things, title):
+  D("show a thing '%s'" % title)
+  data = things.find_one({"title":title})
+  if data:
+    thing = Thing()
+    thing.update(data)
+    print(TGS,thing.title)
+    print("  ctime = ", thing.ctime)
+    print("  uuid  = ", thing.uuid)
+  else:
+    print(OPS, "thing '%s' does not exist" % title)
+
+
+def setup_logging(args):
+  logging.basicConfig()
+  if args.debug:
+    logging.getLogger().setLevel(logging.DEBUG)
+  
 
 def main():
   args = ARGS.parse_args()
@@ -86,29 +132,16 @@ def main():
   if args.remove:
     thing_remove(things, title)
     sys.exit(0)
-  
-  if title.strip() == "": 
-    D("Listing things")
-    for data in things.find():
-      thing = Thing()
-      thing.update(data)
-      print("[]",thing.title)
-  else:
-    D("Create new if") 
-    cursor = things.find({"title": title})
-    if cursor.count() == 0:
-      D("no thing in db, making new")
-      print(OPS, "new thing '%s'" % title)
-      thing = make_thing(title)
-      thing.mongo_insert(things)
-    else:
-      D("thing in db")
-      thing = Thing()
-      thing.update(cursor[0])    
-      cursor.close()
-    thing.debug()
-  
-  
+    
+  if args.new:
+    thing_new(things, title)
+    sys.exit(0)
+    
+  if args.show:
+    thing_show(things, title)
+    sys.exit(0)  
+
+  thing_list(things, title)  
   sys.exit(0)
 
 
