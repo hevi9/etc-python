@@ -10,13 +10,13 @@ import pytest
 import sys
 sys.path.append("..")
 
-from things.things import function
+from things.thingx import Thing
 
 
 def test_01():
   """ Testing 01 """  
   D("test_01 here")
-  assert function(100) == 100
+  Thing({})
 
 
 if __name__ == "__main__":

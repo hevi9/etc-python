@@ -15,38 +15,11 @@ import datetime
 import uuid as muuid
 from pymongo import MongoClient
 import fnmatch
+from .thingx import Thing, make_thing
+
 
 OPS = "==>"  # operation sign
 TGS = "[]"  # thing sign
-
-
-class Thing:
-  
-  def debug(self):
-    D("title='%s':%s",self.title, type(self.title))
-    D("ctime='%s':%s", self.ctime, type(self.ctime))
-    D("uuid='%s':%s", self.uuid, type(self.uuid))
-
-  def mongo_insert(self, col):
-    col.insert({
-      "title": self.title,
-      "ctime": self.ctime,
-      "uuid": self.uuid      
-    })
-
-  def update(self, data):
-    self.title = data["title"]
-    self.ctime = data["ctime"]
-    self.uuid = data["uuid"]
-
-
-def make_thing(title):
-  """ Function does that. """
-  thing = Thing()
-  thing.title = title
-  thing.ctime = datetime.datetime.utcnow()
-  thing.uuid = muuid.uuid4()
-  return thing  
 
 
 ARGS = argparse.ArgumentParser()
