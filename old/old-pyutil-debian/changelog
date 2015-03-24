@@ -1,0 +1,35 @@
+pyutil (0.1.1) experimental; urgency=low
+
+  * new version reorgs, removed functionality
+
+ -- Petri Heinil� <hevi@theoden>  Thu, 10 Nov 2005 17:20:25 +0200
+
+pyutil (0.1.0-8) experimental; urgency=low
+
+  * new debian build almost ready
+
+ -- Petri Heinil� <hevi@theoden>  Wed,  9 Nov 2005 21:18:14 +0200
+
+pyutil (0.1.0-7) experimental; urgency=low
+
+  * new debian build system, test
+
+ -- Petri Heinil� <hevi@theoden>  Wed,  9 Nov 2005 20:17:56 +0200
+
+pyutil (0.1.0-6) experimental; urgency=low
+
+  [ Petri Heinilä <hevi@theoden>  Thu, 27 Oct 2005 17:18:28 +0300 ]
+  * added 2.4
+
+  [ Petri Heinil� ]
+  * test 
+
+ -- Petri Heinil� <hevi@theoden>  Wed,  9 Nov 2005 19:13:33 +0200
+
+pyutil (0.1.0-5) experimental; urgency=low
+
+  * Initial Release.
+
+ -- Petri Heinil <hevi@lut.fi>  Thu, 13 Jan 2005 13:19:00 +0300
+
+

@@ -1,0 +1,60 @@
+/*
+ * debian 
+ * input: DEBIAN_REPO prj.name prj.deb.pkgs
+ */
+
+help::
+{
+	[print "  debian-package -- build debian package"];
+	[print "  debian-install -- install debian package"];	
+	[print "  debian-repo -- upload package to DEBIAN_REPO"];
+}
+	
+info::
+{
+	[print " = DEBIAN_REPO="[DEBIAN_REPO]];
+}
+	
+prg.deb.build = dpkg-buildpackage;
+prg.fakeroot = fakeroot;
+prg.cp = cp;
+prg.aptget = apt-get;
+prg.sudo = sudo;
+
+deb.pkg.files = 
+  "../*"[prj.name]"*.deb" 
+  "../*"[prj.name]"*.changes"
+  "../*"[prj.name]"*.dsc"
+  "../*"[prj.name]"*.tar.gz"
+  ;
+
+debian-package::
+{
+	[prg.deb.build] -r[prg.fakeroot] 
+	/* -b */
+	-us -uc -D;
+}
+
+clean::
+{
+	[prg.fakeroot] ./debian/rules clean;
+	[prg.rm] [deb.pkg.files];
+}
+
+debian-repo:: debian-package
+{
+	[prg.cp] [deb.pkg.files] [DEBIAN_REPO];
+	[DEBIAN_REPO]/update.sh;
+}
+
+debian-install: debian-repo
+{
+  [prg.sudo] [prg.aptget] update;	
+	[prg.sudo] [prg.aptget] -f install [prj.deb.pkgs];
+}
+
+prepare::
+{
+	[prg.chmod] u+rx debian/rules;
+}
+
