@@ -11,22 +11,39 @@ D = log.debug
 I = log.info
 E = log.error
 
+logging.basicConfig(level=logging.DEBUG)
+
 ##############################################################################
 
+class _Control(dict):
+  pass
+
+__control = None
+
+def control():
+  global __control
+  if not __control:
+    __control = _Control()
+  return __control
+
+def control_def(name, value):
+  ctrl = control()
 
 
 ##############################################################################
 
 ctrl = control()
 
-@control_def
-def debug(value):
-  return value
+control_def("debug", False)
+
+ctrl.debug = False
 
 def proto(params):
   """ """
-  if crtl.debug:
-    print("debug is on")
+  if ctrl.debug:
+    print("debug is on: ", ctrl.debug)
+  else:
+    print("debug is off: ", ctrl.debug)
 
 ##############################################################################
 
