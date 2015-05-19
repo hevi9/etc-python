@@ -33,6 +33,13 @@ class Base:
     def _path(self):
         return self.__up._path() + [self.__name] if self.__up is not None else []
 
+    def is_group(self):
+        return False
+
+    @property
+    def name(self):
+        return self.__name
+
 
 class Value(Base):
 
@@ -68,11 +75,11 @@ class Group(Base):
                 obj = self.__data[key]
                 if isinstance(obj, Value):
                     if isinstance(value, Manipulator):
-                        D("apply manipulator")
+                        # D("apply manipulator")
                         value.apply(obj)
                     else:
                         obj.value = value
-                        D("%s=%s", obj, value)
+                        # D("%s=%s", obj, value)
                 else:
                     if isinstance(obj, Group) and len(obj.__data) == 0:
                         obj = Value(self, key, value)
@@ -85,10 +92,13 @@ class Group(Base):
             else:
                 obj = Value(self, key, value)
                 self.__data[key] = obj
-                D("%s=%s", obj, value)
+                # D("%s=%s", obj, value)
 
     def __iter__(self):
-        return iter(self.__data)
+        return iter(self.__data.values())
+
+    def is_group(self):
+        return True
 
 
 cfg = Group()
@@ -119,4 +129,47 @@ def run3():
     cfg.x = 1
     D(cfg.x)
 
-run3()
+
+def run4():
+    cfg.a
+    cfg.a.b
+    cfg.a.x = 1
+    cfg.a.b.y = 2
+
+    def walk(node):
+        for i in node:
+            if i.is_group():
+                print(i)
+                walk(i)
+            else:
+                print(i, i.value)
+    walk(cfg)
+
+import json
+
+
+def tods(top):
+    def walk(node):
+        d = {}
+        for i in node:
+            if i.is_group():
+                d[i.name] = walk(i)
+            else:
+                d[i.name] = i.value
+        return d
+    return walk(cfg)
+
+import yaml
+
+
+def run5():
+    cfg.a
+    cfg.a.b
+    cfg.a.x = 1
+    cfg.a.b.y = 2
+    cfg.a.b.z = [1, 2, 3]
+    print(json.dumps(tods(cfg)))
+    print(yaml.dump(tods(cfg)))
+
+
+run5()
