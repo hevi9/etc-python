@@ -1,0 +1,3 @@
+#!/bin/sh
+echo $@
+exec python3.5 -m mainx.main $@
