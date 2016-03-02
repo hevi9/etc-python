@@ -41,7 +41,3 @@ loop.close()
  
     
 #make_walk(root_path)
-  
-  
-  
-  
