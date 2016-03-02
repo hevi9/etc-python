@@ -1,4 +1,3 @@
-.settings
 *~
 bin
 build
@@ -8,6 +7,7 @@ dist
 *.egg
 *.egg-info
 eggs
+.idea
 .installed.cfg
 lib
 lib64
@@ -22,6 +22,7 @@ __pycache__
 .pydevproject
 /README.md~
 sdist
+.settings
 *.so
 .tox
 var
