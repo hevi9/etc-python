@@ -30,3 +30,4 @@ bundle:
 ## Links
 
 * https://vilimpoc.org/blog/2012/11/23/bundling-up-distributable-python-package-libraries-using-pip-and-zip/
+* https://www.rfk.id.au/blog/entry/frozen-app-starting-faster/
