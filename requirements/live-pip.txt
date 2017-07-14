@@ -1,0 +1,9 @@
+
+# https://github.com/cmanaha/python-elasticsearch-logger
+CMRESHandler
+
+# https://coloredlogs.readthedocs.io/en/latest/
+coloredlogs
+
+# https://pypi.python.org/pypi/python-logstash-async/1.0.0
+python-logstash-async
