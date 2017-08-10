@@ -3,6 +3,10 @@ import inspect
 
 _processors = []
 
+INF = 10
+STP = 5
+DBG = -10
+
 
 def setup(*processors):
     global _processors
@@ -17,16 +21,25 @@ def process(data):
 
 class Log:
     def __init__(self):
+        self._log_stack = []
         pass
 
     def __call__(self, lvl: int, *args, **kwargs):
-        data = {}
-        data["level"] = lvl
+        data = {
+            "level": lvl,
+            "vars": kwargs,
+        }
         if len(args):
             data["msg"] = " ".join(str(arg) for arg in args)
         data["vars"] = kwargs
         process(data)
         return self
+
+    # enter()
+    def scope(self, **kwargs):
+        pass
+
+        # leave
 
 
 log = Log()
@@ -55,6 +68,8 @@ def add_location(data):
 ################################################################################
 ## app
 
+import random
+
 
 def main1():
     setup(
@@ -62,10 +77,10 @@ def main1():
         target_console,
         # target_console_json,
     )
-    log(9, "Items are", 99)
+    log(INF, "Items are", 99)
     for index in range(5):
-        log(0, index=index)
-    log(8, "done")
+        log(STP, "Round", index, result=random.random())
+    log(INF, "done")
 
 
 if __name__ == "__main__":
