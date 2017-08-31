@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 class Log:
     def __init__(self):
         self._processors = []
@@ -26,13 +29,13 @@ class Log:
         self._level = value
 
     # enter()
-    def scope(self, **kwargs):
+    def scope(self, name: str, **kwargs):
         pass
 
     def setup(self, *processors):
         self._processors = processors
 
-    def process(self, data):
+    def process(self, data: dict) -> Dict:
         for processor in self._processors:
             data = processor(data)
         return data

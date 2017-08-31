@@ -1,7 +1,7 @@
 import random
 
 from eslog import log
-from eslog.eslog import processors
+from eslog import processors
 
 INF = 10
 STP = 5
@@ -10,9 +10,8 @@ DBG = -10
 
 def main1():
     log.setup(
-        processors.add_location,
-        processors.target_console,
-        processors.target_console_json,
+        # processors.add_location,
+        processors.target_pprint,
     )
     log.level = INF
     log(INF, "Items are", 99, False)
