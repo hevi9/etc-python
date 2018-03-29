@@ -1,24 +1,30 @@
 import random
 
 from eslog import log
-from eslog import processors
+from eslog import targets, adds
 
 INF = 10
 STP = 5
 DBG = -10
 
 
-def main1():
-    log.setup(
-        # processors.add_location,
-        processors.target_pprint,
-    )
-    log.level = INF
+def run():
     log(INF, "Items are", 99, False)
     for index in range(5):
-        log(INF, "Round", index, result=random.random())
+        log(STP, "Round", index, result=random.random())
     log(INF, "done")
 
 
+def main():
+    log.setup(
+        adds.add_location,
+        # targets.target_pprint,
+        # targets.target_console_json,
+        # targets.target_console,
+    )
+    log.level = STP
+    run()
+
+
 if __name__ == "__main__":
-    main1()
+    main()
